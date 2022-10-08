@@ -101,6 +101,9 @@ class MDM(nn.Module):
 
         self.rot2xyz = Rotation2xyz(device='cpu', dataset=self.dataset)
 
+    def parameters_wo_clip(self):
+        return [p for name, p in self.named_parameters() if not name.startswith('clip_model.')]
+
     def load_and_freeze_clip(self, clip_version):
         clip_model, clip_preprocess = clip.load(clip_version, device='cpu',
                                                 jit=False)  # Must set jit=False for training

@@ -60,7 +60,7 @@ def add_model_options(parser):
 
 def add_data_options(parser):
     group = parser.add_argument_group('dataset')
-    group.add_argument("--dataset", default='kit', choices=['humanml', 'kit', 'humanact', 'uestc'], type=str,
+    group.add_argument("--dataset", default='humanml', choices=['humanml', 'kit', 'humanact', 'uestc'], type=str,
                        help="If empty, will use defaults according to the specified dataset.")
     group.add_argument("--data_dir", default="", type=str,
                        help="If empty, will use defaults according to the specified dataset.")
@@ -70,7 +70,7 @@ def add_training_options(parser):
     group = parser.add_argument_group('training')
     group.add_argument("--save_dir", required=True, type=str,
                        help="Path to save checkpoints and results.")
-    group.add_argument("--overwrite", action='store_true', type=str,
+    group.add_argument("--overwrite", action='store_true',
                        help="If True, will enable to use an already existing save_dir.")
     group.add_argument("--train_platform_type", default='NoPlatform', choices=['NoPlatform', 'ClearmlPlatform', 'TensorboardPlatform'], type=str,
                        help="Choose platform to log results. NoPlatform means no logging.")
@@ -82,7 +82,7 @@ def add_training_options(parser):
                             "Precision calculation is based on fixed batch size 32.")
     group.add_argument("--eval_split", default='test', choices=['val', 'test'], type=str,
                        help="Which split to evaluate on during training.")
-    group.add_argument("--eval_debug", action='store_true', type=str,
+    group.add_argument("--eval_debug", action='store_true',
                        help="If True, will make the eval loop run much faster (and output invalid results).")
     group.add_argument("--eval_rep_times", default=3, type=int,
                        help="Number of repetitions for evaluation loop during training.")
@@ -92,8 +92,10 @@ def add_training_options(parser):
                        help="Log losses each N steps")
     group.add_argument("--save_interval", default=100000, type=int,
                        help="Save checkpoints and run evaluation each N steps")
-    group.add_argument("--num_epochs", default=1000, type=int,
-                       help="Training will stop after the specified number of epochs.")
+    group.add_argument("--num_steps", default=600000, type=int,
+                       help="Training will stop after the specified number of steps.")
+    group.add_argument("--num_frames", default=60, type=int,
+                       help="Limit for the maximal number of frames. In HumanML3D and KIT this field is ignored.")
     group.add_argument("--resume_checkpoint", default="", type=str,
                        help="If not empty, will start from the specified checkpoint (path to model###.pt file).")
 

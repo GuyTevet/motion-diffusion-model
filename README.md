@@ -48,13 +48,12 @@ python -m spacy download en_core_web_sm
 pip install git+https://github.com/openai/CLIP.git
 ```
 
-Download SMPL body model by running this script:
+Download dependencies:
 
 ```bash
 bash prepare/download_smpl_files.sh
+bash prepare/download_glove.sh
 ```
-This will download the SMPL neutral model from this [**github repo**](https://github.com/classner/up/blob/master/models/3D/basicModel_neutral_lbs_10_207_0_v1.0.0.pkl) and additional files.
-
 
 
 ### 2. Get data
@@ -172,7 +171,18 @@ ETA - Nov 22
 
 ## Train your own MDM
 
-ETA - end of Oct 22
+**HumanML3D**
+```shell
+python -m train.train_mdm --save_dir save/my_humanml_trans_enc_512 --dataset humanml
+```
+
+**KIT**
+```shell
+python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
+```
+
+* Use `--device` to define GPU id.
+* Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
 
 ## Evaluate
 

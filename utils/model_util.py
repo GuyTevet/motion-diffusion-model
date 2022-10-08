@@ -20,7 +20,7 @@ def get_model_args(args):
     # default args
     clip_version = 'ViT-B/32'
     action_emb = 'tensor'
-    cond_mode = 'text'
+    cond_mode = 'text' if args.dataset in ['kit', 'humanml'] else 'action'
     num_actions = 1
 
     # SMPL defaults

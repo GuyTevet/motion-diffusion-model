@@ -763,6 +763,11 @@ class HumanML3D(data.Dataset):
             self.t2m_dataset = Text2MotionDatasetV2(self.opt, self.mean, self.std, self.split_file, self.w_vectorizer)
             self.num_actions = 1 # dummy placeholder
 
+        assert len(self.t2m_dataset) > 1, 'You loaded an empty dataset, ' \
+                                          'it is probably because your data dir has only texts and no motions.\n' \
+                                          'To train and evaluate MDM you should get the FULL data as described ' \
+                                          'in the README file.'
+
     def __getitem__(self, item):
         return self.t2m_dataset.__getitem__(item)
 

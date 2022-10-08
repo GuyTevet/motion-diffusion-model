@@ -4,10 +4,7 @@ Generate a large batch of image samples from a model and save them as a large
 numpy array. This can be used to produce samples for FID evaluation.
 """
 from utils.fixseed import fixseed
-import argparse
-import json
 import os
-from tqdm import tqdm
 import numpy as np
 import torch
 from utils.parser_util import sample_args
