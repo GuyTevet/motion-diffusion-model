@@ -22,6 +22,12 @@ If you find this code useful in your research, please cite:
 }
 ```
 
+## News
+
+📢 **9/Oct/22** - Added training and evaluation scripts.
+
+📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
+
 ## Getting started
 
 This code was tested on `Ubuntu 18.04.5 LTS` and requires:
