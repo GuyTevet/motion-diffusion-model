@@ -184,11 +184,22 @@ python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
 * Add `--train_platform_type {ClearmlPlatform, TensorboardPlatform}` to track results with either [ClearML](https://clear.ml/) or [Tensorboard](https://www.tensorflow.org/tensorboard).
+* Add `--eval_during_training` to run a short (90 minutes) evaluation for each saved checkpoint. 
+  This will slow down training but will give you better monitoring.
 
 ## Evaluate
+* Takes about 20 hours (on a single GPU)
+* The output of this script is provided in the checkpoints zip file.
 
-ETA - Nov 22
+**HumanML3D**
+```shell
+python -m eval.eval_humanml --model_path ./save/humanml_trans_enc_512/model000475000.pt
+```
 
+**KIT**
+```shell
+python -m eval.eval_humanml --model_path ./save/kit_trans_enc_512/model000400000.pt
+```
 
 
 ## Acknowledgments

@@ -145,7 +145,7 @@ class CompV6GeneratedDataset(Dataset):
 
 class CompMDMGeneratedDataset(Dataset):
 
-    def __init__(self, model, diffusion, dataloader, mm_num_samples, mm_num_repeats, max_motion_length, num_samples_limit, scale=None):
+    def __init__(self, model, diffusion, dataloader, mm_num_samples, mm_num_repeats, max_motion_length, num_samples_limit, scale=1.):
         self.dataloader = dataloader
         self.dataset = dataloader.dataset
         assert mm_num_samples < len(dataloader.dataset)

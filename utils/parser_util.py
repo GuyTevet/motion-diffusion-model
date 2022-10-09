@@ -108,17 +108,17 @@ def add_training_options(parser):
                             "Precision calculation is based on fixed batch size 32.")
     group.add_argument("--eval_split", default='test', choices=['val', 'test'], type=str,
                        help="Which split to evaluate on during training.")
-    group.add_argument("--eval_debug", action='store_true',
-                       help="If True, will make the eval loop run much faster (and output invalid results).")
+    group.add_argument("--eval_during_training", action='store_true',
+                       help="If True, will run evaluation during training.")
     group.add_argument("--eval_rep_times", default=3, type=int,
                        help="Number of repetitions for evaluation loop during training.")
-    group.add_argument("--eval_num_samples", default=-1, type=int,
+    group.add_argument("--eval_num_samples", default=1_000, type=int,
                        help="If -1, will use all samples in the specified split.")
-    group.add_argument("--log_interval", default=1000, type=int,
+    group.add_argument("--log_interval", default=1_000, type=int,
                        help="Log losses each N steps")
-    group.add_argument("--save_interval", default=100000, type=int,
+    group.add_argument("--save_interval", default=50_000, type=int,
                        help="Save checkpoints and run evaluation each N steps")
-    group.add_argument("--num_steps", default=600000, type=int,
+    group.add_argument("--num_steps", default=600_000, type=int,
                        help="Training will stop after the specified number of steps.")
     group.add_argument("--num_frames", default=60, type=int,
                        help="Limit for the maximal number of frames. In HumanML3D and KIT this field is ignored.")
@@ -149,7 +149,7 @@ def add_sampling_options(parser):
                        help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
 
 def add_evaluation_options(parser):
-    group = parser.add_argument_group('dataset')
+    group = parser.add_argument_group('eval')
     group.add_argument("--model_path", required=True, type=str,
                        help="Path to model####.pt file to be sampled.")
     group.add_argument("--eval_mode", default='wo_mm', choices=['wo_mm', 'mm_short', 'debug'], type=str,

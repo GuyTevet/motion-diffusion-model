@@ -113,6 +113,7 @@ dependencies:
   - pip:
     - blis==0.7.8
     - chumpy==0.70
+    - clearml==1.7.1
     - click==8.1.3
     - confection==0.0.2
     - filelock==3.8.0
