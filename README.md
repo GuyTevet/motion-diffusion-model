@@ -195,7 +195,7 @@ python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
 
 ## Evaluate
 * Takes about 20 hours (on a single GPU)
-* The output of this script is provided in the checkpoints zip file.
+* The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
 
 **HumanML3D**
 ```shell
