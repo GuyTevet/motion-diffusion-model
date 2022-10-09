@@ -2,7 +2,7 @@ import os
 import numpy as np
 # import cv2
 from PIL import Image
-from t2m.utils import paramUtil
+from data_loaders.humanml.utils import paramUtil
 import math
 import time
 import matplotlib.pyplot as plt

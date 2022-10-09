@@ -16,6 +16,7 @@ class ClassifierFreeSampleModel(nn.Module):
         self.njoints = self.model.njoints
         self.nfeats = self.model.nfeats
         self.data_rep = self.model.data_rep
+        self.cond_mode = self.model.cond_mode
 
     def forward(self, x, timesteps, y=None):
         cond_mode = self.model.cond_mode
@@ -25,4 +26,3 @@ class ClassifierFreeSampleModel(nn.Module):
         out = self.model(x, timesteps, y)
         out_uncond = self.model(x, timesteps, y_uncond)
         return out_uncond + (y['scale'].view(-1, 1, 1, 1) * (out - out_uncond))
-

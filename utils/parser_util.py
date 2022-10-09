@@ -3,6 +3,32 @@ import argparse
 import os
 import json
 
+
+def parse_and_load_from_model(parser):
+    # args according to the loaded model
+    # do not try to specify them from cmd line since they will be overwritten
+    add_data_options(parser)
+    add_model_options(parser)
+    add_diffusion_options(parser)
+    args = parser.parse_args()
+    args_to_overwrite = []
+    for group_name in ['dataset', 'model', 'diffusion']:
+        args_to_overwrite += get_args_per_group_name(parser, args, group_name)
+
+    # load args from model
+    model_path = get_model_path_from_args()
+    args_path = os.path.join(os.path.dirname(model_path), 'args.json')
+    assert os.path.exists(args_path), 'Arguments json file was not found!'
+    with open(args_path, 'r') as fr:
+        model_args = json.load(fr)
+    for a in args_to_overwrite:
+        if a in model_args.keys():
+            args.__dict__[a] = model_args[a]
+        else:
+            print('Warning: was not able to load [{}], using default value [{}] instead.'.format(a, args.__dict__[a]))
+    return args
+
+
 def get_args_per_group_name(parser, args, group_name):
     for group in parser._action_groups:
         if group.title == group_name:
@@ -61,7 +87,7 @@ def add_model_options(parser):
 def add_data_options(parser):
     group = parser.add_argument_group('dataset')
     group.add_argument("--dataset", default='humanml', choices=['humanml', 'kit', 'humanact', 'uestc'], type=str,
-                       help="If empty, will use defaults according to the specified dataset.")
+                       help="Dataset name (choose from list).")
     group.add_argument("--data_dir", default="", type=str,
                        help="If empty, will use defaults according to the specified dataset.")
 
@@ -122,6 +148,17 @@ def add_sampling_options(parser):
     group.add_argument("--guidance_param", default=2.5, type=float,
                        help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
 
+def add_evaluation_options(parser):
+    group = parser.add_argument_group('dataset')
+    group.add_argument("--model_path", required=True, type=str,
+                       help="Path to model####.pt file to be sampled.")
+    group.add_argument("--eval_mode", default='wo_mm', choices=['wo_mm', 'mm_short', 'debug'], type=str,
+                       help="wo_mm - 20 repetitions without multi-modality metric; "
+                            "mm_short - 5 repetitions with multi-modality metric; "
+                            "debug - short run, less accurate results.")
+    group.add_argument("--guidance_param", default=2.5, type=float,
+                       help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
+
 
 def train_args():
     parser = ArgumentParser()
@@ -132,36 +169,17 @@ def train_args():
     add_training_options(parser)
     return parser.parse_args()
 
+
 def sample_args():
     parser = ArgumentParser()
-
-    # args specified by the user
+    # args specified by the user: (all other will be loaded from the model)
     add_base_options(parser)
     add_sampling_options(parser)
-
-    # args according to the loaded model
-    # do not try to specify them from cmd line since they will be overwritten
-    add_data_options(parser)
-    add_model_options(parser)
-    add_diffusion_options(parser)
-    args = parser.parse_args()
-    args_to_overwrite = []
-    for group_name in ['dataset', 'model', 'diffusion']:
-        args_to_overwrite += get_args_per_group_name(parser, args, group_name)
-
-    # load args from model
-    model_path = get_model_path_from_args()
-    args_path = os.path.join(os.path.dirname(model_path), 'args.json')
-    assert os.path.exists(args_path), 'Arguments json file was not found!'
-    with open(args_path, 'r') as fr:
-        model_args = json.load(fr)
-    for a in args_to_overwrite:
-        if a in model_args.keys():
-            args.__dict__[a] = model_args[a]
-        else:
-            print('Warning: was not able to load [{}], using default value [{}] instead.'.format(a, args.__dict__[a]))
-
-    return args
+    return parse_and_load_from_model(parser)
 
 def evaluation_parser():
-    raise NotImplementedError()
+    parser = ArgumentParser()
+    # args specified by the user: (all other will be loaded from the model)
+    add_base_options(parser)
+    add_evaluation_options(parser)
+    return parse_and_load_from_model(parser)

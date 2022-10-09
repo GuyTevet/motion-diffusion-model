@@ -737,13 +737,14 @@ class HumanML3D(data.Dataset):
         opt.checkpoints_dir = pjoin(abs_base_path, opt.checkpoints_dir)
         opt.data_root = pjoin(abs_base_path, opt.data_root)
         opt.save_root = pjoin(abs_base_path, opt.save_root)
+        opt.meta_dir = './dataset'
         self.opt = opt
         print('Loading dataset %s ...' % opt.dataset_name)
 
         if mode == 'gt':
             # used by T2M models (including evaluators)
-            self.mean = np.load(pjoin(opt.meta_dir, 'mean.npy'))
-            self.std = np.load(pjoin(opt.meta_dir, 'std.npy'))
+            self.mean = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_mean.npy'))
+            self.std = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_std.npy'))
         elif mode in ['train', 'eval', 'text_only']:
             # used by our models
             self.mean = np.load(pjoin(opt.data_root, 'Mean.npy'))
@@ -752,8 +753,8 @@ class HumanML3D(data.Dataset):
         if mode == 'eval':
             # used by T2M models (including evaluators)
             # this is to translate their norms to ours
-            self.mean_for_eval = np.load(pjoin(opt.meta_dir, 'mean.npy'))
-            self.std_for_eval = np.load(pjoin(opt.meta_dir, 'std.npy'))
+            self.mean_for_eval = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_mean.npy'))
+            self.std_for_eval = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_std.npy'))
 
         self.split_file = pjoin(opt.data_root, f'{split}.txt')
         if mode == 'text_only':

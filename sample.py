@@ -46,7 +46,7 @@ def main():
     load_model_wo_clip(model, state_dict)
 
     if args.guidance_param != 1:
-        model = ClassifierFreeSampleModel(model)   # wrapping model with the classifier-free sampler  # TODO - simplify
+        model = ClassifierFreeSampleModel(model)   # wrapping model with the classifier-free sampler
     model.to(dist_util.dev())
     model.eval()  # disable random masking
 

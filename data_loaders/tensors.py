@@ -41,6 +41,10 @@ def collate(batch):
         textbatch = [b['text'] for b in notnone_batches]
         cond['y'].update({'text': textbatch})
 
+    if 'tokens' in notnone_batches[0]:
+        textbatch = [b['tokens'] for b in notnone_batches]
+        cond['y'].update({'tokens': textbatch})
+
     # collate action textual names
     if 'action_text' in notnone_batches[0]:
         action_text = [b['action_text']for b in notnone_batches]

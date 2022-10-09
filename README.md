@@ -183,6 +183,7 @@ python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
 
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
+* Add `--train_platform_type {ClearmlPlatform, TensorboardPlatform}` to track results with either [ClearML](https://clear.ml/) or [Tensorboard](https://www.tensorflow.org/tensorboard).
 
 ## Evaluate
 
