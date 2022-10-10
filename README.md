@@ -24,7 +24,8 @@ If you find this code useful in your research, please cite:
 
 ## News
 
-📢 **9/Oct/22** - Added training and evaluation scripts.
+📢 **9/Oct/22** - Added training and evaluation scripts. 
+  Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_glove.sh; pip install clearml` to adapt.
 
 📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
 
