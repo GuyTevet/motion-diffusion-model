@@ -29,6 +29,13 @@ If you find this code useful in your research, please cite:
 
 📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
 
+## ETAs
+
+* Editing: Nov 22
+* Action to Motion: Nov 22
+* Unconstrained Motion: Nov 22
+
+
 ## Getting started
 
 This code was tested on `Ubuntu 18.04.5 LTS` and requires:
@@ -172,9 +179,6 @@ python -m visualize.render_mesh --input_path /path/to/mp4/stick/figure/file
   1. A more straightforward way is using the mesh data itself. All meshes have the same topology (SMPL), so you just need to keyframe vertex locations. 
      Since the OBJs are not preserving vertices order, we also save this data to the `sample##_rep##_smpl_params.npy` file for your convenience.
 
-### Editing
-
-ETA - Nov 22
 
 ## Train your own MDM
 
