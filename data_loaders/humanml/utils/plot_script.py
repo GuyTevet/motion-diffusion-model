@@ -24,7 +24,7 @@ def list_cut_average(ll, intervals):
     return ll_new
 
 
-def plot_3d_motion(save_path, kinematic_tree, joints, title, figsize=(3, 3), fps=120, radius=3):
+def plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3, 3), fps=120, radius=3):
     matplotlib.use('Agg')
 
     # title_sp = title.split(' ')
@@ -58,6 +58,15 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, figsize=(3, 3), fps
 
     # (seq_len, joints_num, 3)
     data = joints.copy().reshape(len(joints), -1, 3)
+
+    # preparation related to specific datasets
+    if dataset == 'kit':
+        data *= 0.003  # scale for visualization
+    elif dataset == 'humanml':
+        data *= 1.3  # scale for visualization
+    elif dataset in ['humanact12', 'uestc']:
+        data *= -1.5 # reverse axes, scale for visualization
+
     fig = plt.figure(figsize=figsize)
     plt.tight_layout()
     ax = p3.Axes3D(fig)

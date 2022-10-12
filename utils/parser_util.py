@@ -26,6 +26,8 @@ def parse_and_load_from_model(parser):
             args.__dict__[a] = model_args[a]
         else:
             print('Warning: was not able to load [{}], using default value [{}] instead.'.format(a, args.__dict__[a]))
+    if args.cond_mask_prob == 0:
+        args.guidance_param = 1
     return args
 
 
@@ -135,8 +137,14 @@ def add_sampling_options(parser):
                             "If empty, will create dir in parallel to checkpoint.")
     group.add_argument("--input_text", default='', type=str,
                        help="Path to csv/txt file that specifies generation. If empty, will take text prompts from dataset.")
+    group.add_argument("--action_file", default='', type=str,
+                       help="Path to a text file that lists names of actions to be synthesized. Names must be a subset of dataset/uestc/info/action_classes.txt if sampling from uestc, "
+                            "or a subset of [warm_up,walk,run,jump,drink,lift_dumbbell,sit,eat,turn steering wheel,phone,boxing,throw] if sampling from humanact12. "
+                            "If empty, will take text prompts from dataset.")
     group.add_argument("--text_prompt", default='', type=str,
                        help="A text prompt to be generated. If empty, will take text prompts from dataset.")
+    group.add_argument("--action_name", default='', type=str,
+                       help="An action name to be generated. If empty, will take text prompts from dataset.")
     group.add_argument("--num_samples", default=10, type=int,
                        help="Maximal number of prompts to sample, "
                             "if loading dataset from file, this field will be ignored.")
