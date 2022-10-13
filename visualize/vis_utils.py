@@ -65,7 +65,7 @@ class npy2obj:
         }
         np.save(save_path, data_dict)
         
-        # Conversion of data for .pkl file for SM 'softcat477/SMPL-to-FBX/' 
+        # Conversion of data for .pkl file for 'softcat477/SMPL-to-FBX/' 
         # Change 'FbxTime.eFrames60's in SMPL-to-FBX/FbxReadWriter.py to 'FbxTime.eFrames30'
         # Known issues: Glitches below 30 fps exports in 'softcat477/SMPL-to-FBX/' (20 fps expected)
 
@@ -87,5 +87,5 @@ class npy2obj:
 
         with open(save_path +".pkl", 'wb') as pickle_file:
             pickle.dump(data_dict2, pickle_file)     
-        # End of Conversion of data for .pkl file for SM 'softcat477/SMPL-to-FBX/'
+        # End of Conversion of data for .pkl file for 'softcat477/SMPL-to-FBX/'
 
