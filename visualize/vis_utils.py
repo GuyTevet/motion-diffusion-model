@@ -72,7 +72,7 @@ class npy2obj:
         i = range(self.real_num_frames)
         poses_raw = []
         latest = None
-        for idx, x in np.ndenumerate(np.array(torch.flatten(geometry.matrix_to_axis_angle(geometry.rotation_6d_to_matrix(torch.tensor(self.motions['motion'][0, :-1, :, i])))))):
+        for idx, x in np.ndenumerate(torch.flatten(geometry.matrix_to_axis_angle(geometry.rotation_6d_to_matrix(torch.tensor(self.motions['motion'][0, :-1, :, i]))))):
             poses_raw.append(x)
             latest = x
         smpl_poses = np.array(poses_raw).reshape(self.real_num_frames, 72)
