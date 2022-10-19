@@ -152,7 +152,11 @@ def main():
 
     print(f"saving visualizations to [{out_path}]...")
     skeleton = paramUtil.kit_kinematic_chain if args.dataset == 'kit' else paramUtil.t2m_kinematic_chain
+
+    sample_files = []
+    num_samples_in_out_file = 7
     for sample_i in range(args.num_samples):
+        rep_files = []
         for rep_i in range(args.num_repetitions):
             caption = all_text[rep_i*args.batch_size + sample_i]
             length = all_lengths[rep_i*args.batch_size + sample_i]
@@ -166,6 +170,25 @@ def main():
                 motion *= 1.3  # scale for visualization
             plot_3d_motion(animation_save_path, skeleton, motion, title=caption, fps=fps)
             # Credit for visualization: https://github.com/EricGuo5513/text-to-motion
+
+            rep_files.append(animation_save_path)
+        all_rep_save_file = os.path.join(out_path, 'sample{:02d}.mp4'.format(sample_i))
+        ffmpeg_rep_files = [f' -i {f} ' for f in rep_files]
+        hstack_args = f' -filter_complex hstack=inputs={args.num_repetitions}' if args.num_repetitions > 1 else ''
+        ffmpeg_rep_cmd = f'ffmpeg -y -loglevel warning ' + ''.join(ffmpeg_rep_files) + f'{hstack_args} {all_rep_save_file}'
+        os.system(ffmpeg_rep_cmd)
+        print(f'[({sample_i}) "{caption}" | all repetitions | -> {all_rep_save_file}]')
+        sample_files.append(all_rep_save_file)
+
+        if (sample_i+1) % num_samples_in_out_file == 0 or sample_i+1 == args.num_samples:
+            all_sample_save_file = os.path.join(out_path, f'samples_{(sample_i - len(sample_files) + 1):02d}_to_{sample_i:02d}.mp4')
+            ffmpeg_rep_files = [f' -i {f} ' for f in sample_files]
+            vstack_args = f' -filter_complex vstack=inputs={len(sample_files)}' if len(sample_files) > 1 else ''
+            ffmpeg_rep_cmd = f'ffmpeg -y -loglevel warning ' + ''.join(ffmpeg_rep_files) + f'{vstack_args} {all_sample_save_file}'
+            os.system(ffmpeg_rep_cmd)
+            print(f'[(samples {(sample_i - len(sample_files) + 1):02d} to {sample_i:02d}) | all repetitions | -> {all_sample_save_file}]')
+            sample_files = []
+
 
     abs_path = os.path.abspath(out_path)
     print(f'[Done] Results are at [{abs_path}]')
