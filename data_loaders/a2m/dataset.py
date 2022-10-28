@@ -235,3 +235,21 @@ class Dataset(torch.utils.data.Dataset):
             return min(len(self._train), num_seq_max)
         else:
             return min(len(self._test), num_seq_max)
+
+    def shuffle(self):
+        if self.split == 'train':
+            random.shuffle(self._train)
+        else:
+            random.shuffle(self._test)
+
+    def reset_shuffle(self):
+        if self.split == 'train':
+            if self._original_train is None:
+                self._original_train = self._train
+            else:
+                self._train = self._original_train
+        else:
+            if self._original_test is None:
+                self._original_test = self._test
+            else:
+                self._test = self._original_test

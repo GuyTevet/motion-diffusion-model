@@ -16,7 +16,7 @@ from diffusion.resample import LossAwareSampler, UniformSampler
 from tqdm import tqdm
 from diffusion.resample import create_named_schedule_sampler
 from data_loaders.humanml.networks.evaluator_wrapper import EvaluatorMDMWrapper
-from eval import eval_humanml
+from eval import eval_humanml, eval_humanact12_uestc
 from data_loaders.get_data import get_dataset_loader
 
 
@@ -185,17 +185,14 @@ class TrainLoop:
                                                       group_name='Eval')
 
         elif self.dataset in ['humanact12', 'uestc']:
-            from scripts import eval_humanact12_uestc
-            num_seeds = 2 if self.eval_debug else self.eval_rep_times
-            num_samples = 64 if self.eval_debug else self.eval_num_samples
-            args = SimpleNamespace(num_seeds=num_seeds, num_samples=num_samples, use_ddim=False,
-                                   batch_size=self.batch_size, device=self.device, guidance_scale=False,
-                                   dataset=self.dataset, cond_mode=self.cond_mode, model_path=os.path.join(self.save_dir, self.ckpt_file_name()))
-            eval_dict = eval_humanact12_uestc.evaluate(args, model=self.model, diffusion=self.diffusion, data=self.data.dataset)
+            eval_args = SimpleNamespace(num_seeds=self.args.eval_rep_times, num_samples=self.args.eval_num_samples,
+                                        batch_size=self.args.eval_batch_size, device=self.device, guidance_param = 1,
+                                        dataset=self.dataset, cond_mode='action',
+                                        model_path=os.path.join(self.save_dir, self.ckpt_file_name()))
+            eval_dict = eval_humanact12_uestc.evaluate(eval_args, model=self.model, diffusion=self.diffusion, data=self.data.dataset)
             print(f'Evaluation results on {self.dataset}: {sorted(eval_dict["feats"].items())}')
             for k, v in eval_dict["feats"].items():
                 self.train_platform.report_scalar(name=k, value=np.array(v).astype(float).mean(), iteration=self.step, group_name='Eval')
-
 
         end_eval = time.time()
         print(f'Evaluation time: {round(end_eval-start_eval)/60}min')

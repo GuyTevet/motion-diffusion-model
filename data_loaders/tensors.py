@@ -59,7 +59,6 @@ def t2m_collate(batch):
     # batch.sort(key=lambda x: x[3], reverse=True)
     adapted_batch = [{
         'inp': torch.tensor(b[4].T).float().unsqueeze(1), # [seqlen, J] -> [J, 1, seqlen]
-        'target': 0,
         'text': b[2], #b[0]['caption']
         'tokens': b[6],
         'lengths': b[5],

@@ -24,6 +24,8 @@ If you find this code useful in your research, please cite:
 
 ## News
 
+📢 **31/Oct/22** - Added sampling, training and evaluation of action-to-motion tasks.
+
 📢 **9/Oct/22** - Added training and evaluation scripts. 
   Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_glove.sh; pip install clearml` to adapt.
 
@@ -32,7 +34,6 @@ If you find this code useful in your research, please cite:
 ## ETAs
 
 * Editing: Nov 22
-* Action to Motion: Nov 22
 * Unconstrained Motion: Nov 22
 
 
@@ -245,6 +246,9 @@ python -m visualize.render_mesh --input_path /path/to/mp4/stick/figure/file
 
 ## Train your own MDM
 
+<details>
+  <summary><b>Text to Motion</b></summary>
+
 **HumanML3D**
 ```shell
 python -m train.train_mdm --save_dir save/my_humanml_trans_enc_512 --dataset humanml
@@ -255,6 +259,13 @@ python -m train.train_mdm --save_dir save/my_humanml_trans_enc_512 --dataset hum
 python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
 ```
 </details>
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+```shell
+python -m train.train_mdm --save_dir save/my_name --dataset {humanact12,uestc} --cond_mask_prob 0 --lambda_rcxyz 1 --lambda_vel 1 --lambda_fc 1
+```
+</details>
 
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
@@ -263,6 +274,10 @@ python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
   This will slow down training but will give you better monitoring.
 
 ## Evaluate
+
+<details>
+  <summary><b>Text to Motion</b></summary>
+
 * Takes about 20 hours (on a single GPU)
 * The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
 
@@ -275,6 +290,20 @@ python -m eval.eval_humanml --model_path ./save/humanml_trans_enc_512/model00047
 ```shell
 python -m eval.eval_humanml --model_path ./save/kit_trans_enc_512/model000400000.pt
 ```
+</details>
+
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+* Takes about 7 hours for UESTC and 2 hours for HumanAct12 (on a single GPU)
+* The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
+
+```shell
+--model <path-to-model-ckpt> --eval_mode full
+```
+where `path-to-model-ckpt` can be a path to any of the pretrained action-to-motion models listed above, or to a checkpoint trained by the user.
+
+</details>
 
 
 ## Acknowledgments
