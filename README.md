@@ -118,19 +118,19 @@ Download the model(s) you wish to use, then unzip and place it in `./save/`. **F
 ### Generate from test set prompts
 
 ```shell
-python -m sample --model_path ./save/humanml_trans_enc_512/model000200000.pt --num_samples 10 --num_repetitions 3
+python -m sample.generate --model_path ./save/humanml_trans_enc_512/model000200000.pt --num_samples 10 --num_repetitions 3
 ```
 
 ### Generate from your text file
 
 ```shell
-python -m sample --model_path ./save/humanml_trans_enc_512/model000200000.pt --input_text ./assets/example_text_prompts.txt
+python -m sample.generate --model_path ./save/humanml_trans_enc_512/model000200000.pt --input_text ./assets/example_text_prompts.txt
 ```
 
 ### Generate a single prompt
 
 ```shell
-python -m sample --model_path ./save/humanml_trans_enc_512/model000200000.pt --text_prompt "the person walked forward and is picking up his toolbox."
+python -m sample.generate --model_path ./save/humanml_trans_enc_512/model000200000.pt --text_prompt "the person walked forward and is picking up his toolbox."
 ```
 
 **You can also define:**
