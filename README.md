@@ -24,10 +24,18 @@ If you find this code useful in your research, please cite:
 
 ## News
 
+📢 **31/Oct/22** - Added sampling, training and evaluation of action-to-motion tasks.
+
 📢 **9/Oct/22** - Added training and evaluation scripts. 
   Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_glove.sh; pip install clearml` to adapt.
 
 📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
+
+## ETAs
+
+* Editing: Nov 22
+* Unconstrained Motion: Nov 22
+
 
 ## Getting started
 
@@ -65,6 +73,9 @@ bash prepare/download_glove.sh
 
 ### 2. Get data
 
+<details>
+  <summary><b>Text to Motion</b></summary>
+
 There are two paths to get the data:
 
 (a) **Go the easy way if** you just want to generate text-to-motion (excluding editing which does require motion capture data)
@@ -95,11 +106,25 @@ cp -r ../HumanML3D/HumanML3D ./dataset/HumanML3D
 ```
 
 **KIT** - Download from [HumanML3D](https://github.com/EricGuo5513/HumanML3D.git) (no processing needed this time) and the place result in `./dataset/KIT-ML`
+</details>
 
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+**UESTC, HumanAct12** :
+```bash
+bash prepare/download_a2m_datasets.sh
+```
+</details>
 
 ### 3. Download the pretrained models
 
-Download the model(s) you wish to use, then unzip and place it in `./save/`. **For text-to-motion, you need only the first one.** 
+Download the model(s) you wish to use, then unzip and place them in `./save/`. 
+
+<details>
+  <summary><b>Text to Motion</b></summary>
+
+**You need only the first one.** 
 
 **HumanML3D**
 
@@ -113,7 +138,29 @@ Download the model(s) you wish to use, then unzip and place it in `./save/`. **F
 
 [kit-encoder-512](https://drive.google.com/file/d/1SHCRcE0es31vkJMLGf9dyLe7YsWj7pNL/view?usp=sharing)
 
-## Generate text-to-motion
+</details>
+
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+**UESTC**
+
+[uestc](https://drive.google.com/file/d/1goB2DJK4B-fLu2QmqGWKAqWGMTAO6wQ6/view?usp=sharing)
+
+[uestc_no_fc](https://drive.google.com/file/d/1fpv3mR-qP9CYCsi9CrQhFqlLavcSQky6/view?usp=sharing)
+
+**HumanAct12**
+
+[humanact12](https://drive.google.com/file/d/154X8_Lgpec6Xj0glEGql7FVKqPYCdBFO/view?usp=sharing)
+
+[humanact12_no_fc](https://drive.google.com/file/d/1frKVMBYNiN5Mlq7zsnhDBzs9vGJvFeiQ/view?usp=sharing)
+
+</details>
+
+
+## Motion Synthesis
+<details>
+  <summary><b>Text to Motion</b></summary>
 
 ### Generate from test set prompts
 
@@ -132,11 +179,35 @@ python -m sample.generate --model_path ./save/humanml_trans_enc_512/model0002000
 ```shell
 python -m sample.generate --model_path ./save/humanml_trans_enc_512/model000200000.pt --text_prompt "the person walked forward and is picking up his toolbox."
 ```
+</details>
 
-**You can also define:**
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+### Generate from test set actions
+
+```shell
+python -m sample --model_path ./save/humanact12/model000350000.pt --num_samples 10 --num_repetitions 3
+```
+
+### Generate from your actions file
+
+```shell
+python -m sample --model_path ./save/humanact12/model000350000.pt --action_file ./assets/example_action_names_humanact12.txt
+```
+
+### Generate a single prompt
+
+```shell
+python -m sample --model_path ./save/humanact12/model000350000.pt --text_prompt "drink"
+```
+</details>
+
+
+**You may also define:**
 * `--device` id.
 * `--seed` to sample different prompts.
-* `--motion_length` in seconds (maximum is 9.8[sec]).
+* `--motion_length` (text-to-motion only) in seconds (maximum is 9.8[sec]).
 
 **Running those will get you:**
 
@@ -172,11 +243,11 @@ python -m visualize.render_mesh --input_path /path/to/mp4/stick/figure/file
   1. A more straightforward way is using the mesh data itself. All meshes have the same topology (SMPL), so you just need to keyframe vertex locations. 
      Since the OBJs are not preserving vertices order, we also save this data to the `sample##_rep##_smpl_params.npy` file for your convenience.
 
-### Editing
-
-ETA - Nov 22
 
 ## Train your own MDM
+
+<details>
+  <summary><b>Text to Motion</b></summary>
 
 **HumanML3D**
 ```shell
@@ -187,6 +258,14 @@ python -m train.train_mdm --save_dir save/my_humanml_trans_enc_512 --dataset hum
 ```shell
 python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
 ```
+</details>
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+```shell
+python -m train.train_mdm --save_dir save/my_name --dataset {humanact12,uestc} --cond_mask_prob 0 --lambda_rcxyz 1 --lambda_vel 1 --lambda_fc 1
+```
+</details>
 
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
@@ -195,6 +274,10 @@ python -m train.train_mdm --save_dir save/my_kit_trans_enc_512 --dataset kit
   This will slow down training but will give you better monitoring.
 
 ## Evaluate
+
+<details>
+  <summary><b>Text to Motion</b></summary>
+
 * Takes about 20 hours (on a single GPU)
 * The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
 
@@ -207,6 +290,20 @@ python -m eval.eval_humanml --model_path ./save/humanml_trans_enc_512/model00047
 ```shell
 python -m eval.eval_humanml --model_path ./save/kit_trans_enc_512/model000400000.pt
 ```
+</details>
+
+<details>
+  <summary><b>Action to Motion</b></summary>
+
+* Takes about 7 hours for UESTC and 2 hours for HumanAct12 (on a single GPU)
+* The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
+
+```shell
+--model <path-to-model-ckpt> --eval_mode full
+```
+where `path-to-model-ckpt` can be a path to any of the pretrained action-to-motion models listed above, or to a checkpoint trained by the user.
+
+</details>
 
 
 ## Acknowledgments

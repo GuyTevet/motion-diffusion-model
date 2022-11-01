@@ -22,7 +22,6 @@ def collate_tensors(batch):
 def collate(batch):
     notnone_batches = [b for b in batch if b is not None]
     databatch = [b['inp'] for b in notnone_batches]
-    labelbatch = [b['target'] for b in notnone_batches]
     if 'lengths' in notnone_batches[0]:
         lenbatch = [b['lengths'] for b in notnone_batches]
     else:
@@ -30,7 +29,6 @@ def collate(batch):
 
 
     databatchTensor = collate_tensors(databatch)
-    labelbatchTensor = torch.as_tensor(labelbatch)
     lenbatchTensor = torch.as_tensor(lenbatch)
     maskbatchTensor = lengths_to_mask(lenbatchTensor, databatchTensor.shape[-1]).unsqueeze(1).unsqueeze(1) # unqueeze for broadcasting
 
@@ -45,6 +43,10 @@ def collate(batch):
         textbatch = [b['tokens'] for b in notnone_batches]
         cond['y'].update({'tokens': textbatch})
 
+    if 'action' in notnone_batches[0]:
+        actionbatch = [b['action'] for b in notnone_batches]
+        cond['y'].update({'action': torch.as_tensor(actionbatch).unsqueeze(1)})
+
     # collate action textual names
     if 'action_text' in notnone_batches[0]:
         action_text = [b['action_text']for b in notnone_batches]
@@ -57,7 +59,6 @@ def t2m_collate(batch):
     # batch.sort(key=lambda x: x[3], reverse=True)
     adapted_batch = [{
         'inp': torch.tensor(b[4].T).float().unsqueeze(1), # [seqlen, J] -> [J, 1, seqlen]
-        'target': 0,
         'text': b[2], #b[0]['caption']
         'tokens': b[6],
         'lengths': b[5],

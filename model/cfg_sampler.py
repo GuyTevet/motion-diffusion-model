@@ -10,6 +10,9 @@ class ClassifierFreeSampleModel(nn.Module):
     def __init__(self, model):
         super().__init__()
         self.model = model  # model is the actual model to run
+
+        assert self.model.cond_mask_prob > 0, 'Cannot run a guided diffusion on a model that has not been trained with no conditions'
+
         # pointers to inner model
         self.rot2xyz = self.model.rot2xyz
         self.translation = self.model.translation
@@ -26,3 +29,4 @@ class ClassifierFreeSampleModel(nn.Module):
         out = self.model(x, timesteps, y)
         out_uncond = self.model(x, timesteps, y_uncond)
         return out_uncond + (y['scale'].view(-1, 1, 1, 1) * (out - out_uncond))
+

@@ -26,6 +26,8 @@ def parse_and_load_from_model(parser):
             args.__dict__[a] = model_args[a]
         else:
             print('Warning: was not able to load [{}], using default value [{}] instead.'.format(a, args.__dict__[a]))
+    if args.cond_mask_prob == 0:
+        args.guidance_param = 1
     return args
 
 
@@ -86,7 +88,7 @@ def add_model_options(parser):
 
 def add_data_options(parser):
     group = parser.add_argument_group('dataset')
-    group.add_argument("--dataset", default='humanml', choices=['humanml', 'kit', 'humanact', 'uestc'], type=str,
+    group.add_argument("--dataset", default='humanml', choices=['humanml', 'kit', 'humanact12', 'uestc'], type=str,
                        help="Dataset name (choose from list).")
     group.add_argument("--data_dir", default="", type=str,
                        help="If empty, will use defaults according to the specified dataset.")
@@ -105,7 +107,7 @@ def add_training_options(parser):
     group.add_argument("--lr_anneal_steps", default=0, type=int, help="Number of learning rate anneal steps.")
     group.add_argument("--eval_batch_size", default=32, type=int,
                        help="Batch size during evaluation loop. Do not change this unless you know what you are doing. "
-                            "Precision calculation is based on fixed batch size 32.")
+                            "T2m precision calculation is based on fixed batch size 32.")
     group.add_argument("--eval_split", default='test', choices=['val', 'test'], type=str,
                        help="Which split to evaluate on during training.")
     group.add_argument("--eval_during_training", action='store_true',
@@ -134,9 +136,15 @@ def add_sampling_options(parser):
                        help="Path to results dir (auto created by the script). "
                             "If empty, will create dir in parallel to checkpoint.")
     group.add_argument("--input_text", default='', type=str,
-                       help="Path to csv/txt file that specifies generation. If empty, will take text prompts from dataset.")
+                       help="Path to a text file lists text prompts to be synthesized. If empty, will take text prompts from dataset.")
+    group.add_argument("--action_file", default='', type=str,
+                       help="Path to a text file that lists names of actions to be synthesized. Names must be a subset of dataset/uestc/info/action_classes.txt if sampling from uestc, "
+                            "or a subset of [warm_up,walk,run,jump,drink,lift_dumbbell,sit,eat,turn steering wheel,phone,boxing,throw] if sampling from humanact12. "
+                            "If no file is specified, will take action names from dataset.")
     group.add_argument("--text_prompt", default='', type=str,
                        help="A text prompt to be generated. If empty, will take text prompts from dataset.")
+    group.add_argument("--action_name", default='', type=str,
+                       help="An action name to be generated. If empty, will take text prompts from dataset.")
     group.add_argument("--num_samples", default=10, type=int,
                        help="Maximal number of prompts to sample, "
                             "if loading dataset from file, this field will be ignored.")
@@ -152,10 +160,11 @@ def add_evaluation_options(parser):
     group = parser.add_argument_group('eval')
     group.add_argument("--model_path", required=True, type=str,
                        help="Path to model####.pt file to be sampled.")
-    group.add_argument("--eval_mode", default='wo_mm', choices=['wo_mm', 'mm_short', 'debug'], type=str,
-                       help="wo_mm - 20 repetitions without multi-modality metric; "
-                            "mm_short - 5 repetitions with multi-modality metric; "
-                            "debug - short run, less accurate results.")
+    group.add_argument("--eval_mode", default='wo_mm', choices=['wo_mm', 'mm_short', 'debug', 'full'], type=str,
+                       help="wo_mm (t2m only) - 20 repetitions without multi-modality metric; "
+                            "mm_short (t2m only) - 5 repetitions with multi-modality metric; "
+                            "debug - short run, less accurate results."
+                            "full (a2m only) - 20 repetitions.")
     group.add_argument("--guidance_param", default=2.5, type=float,
                        help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
 

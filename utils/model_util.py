@@ -9,19 +9,22 @@ def load_model_wo_clip(model, state_dict):
     assert all([k.startswith('clip_model.') for k in missing_keys])
 
 
-def create_model_and_diffusion(args):
-    model = MDM(**get_model_args(args))
+def create_model_and_diffusion(args, data):
+    model = MDM(**get_model_args(args, data))
     diffusion = create_gaussian_diffusion(args)
     return model, diffusion
 
 
-def get_model_args(args):
+def get_model_args(args, data):
 
     # default args
     clip_version = 'ViT-B/32'
     action_emb = 'tensor'
     cond_mode = 'text' if args.dataset in ['kit', 'humanml'] else 'action'
-    num_actions = 1
+    if hasattr(data.dataset, 'num_actions'):
+        num_actions = data.dataset.num_actions
+    else:
+        num_actions = 1
 
     # SMPL defaults
     data_rep = 'rot6d'
@@ -36,8 +39,6 @@ def get_model_args(args):
         data_rep = 'hml_vec'
         njoints = 251
         nfeats = 1
-
-    # TODO - set num_actions for action-to-motion datasets
 
     return {'modeltype': '', 'njoints': njoints, 'nfeats': nfeats, 'num_actions': num_actions,
             'translation': True, 'pose_rep': 'rot6d', 'glob': True, 'glob_rot': True,
