@@ -65,11 +65,24 @@ pip install git+https://github.com/openai/CLIP.git
 
 Download dependencies:
 
+<details>
+  <summary><b>Text to Motion</b></summary>
+
 ```bash
 bash prepare/download_smpl_files.sh
 bash prepare/download_glove.sh
 ```
+</details>
 
+<details>
+  <summary><b>Text to Motion, Unconstrained</b></summary>
+
+```bash
+bash prepare/download_smpl_files.sh
+bash prepare/download_a2m_datasets.sh
+bash prepare/download_recognition_models.sh
+```
+</details>
 
 ### 2. Get data
 
@@ -196,7 +209,7 @@ python -m sample --model_path ./save/humanact12/model000350000.pt --num_samples 
 python -m sample --model_path ./save/humanact12/model000350000.pt --action_file ./assets/example_action_names_humanact12.txt
 ```
 
-### Generate a single prompt
+### Generate a single action
 
 ```shell
 python -m sample --model_path ./save/humanact12/model000350000.pt --text_prompt "drink"
