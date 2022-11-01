@@ -164,6 +164,8 @@ class TrainLoop:
             self.evaluate()
 
     def evaluate(self):
+        if not self.args.eval_during_training:
+            return
         start_eval = time.time()
         if self.eval_wrapper is not None:
             print('Running evaluation loop: [Should take about 90 min]')
@@ -187,12 +189,15 @@ class TrainLoop:
         elif self.dataset in ['humanact12', 'uestc']:
             eval_args = SimpleNamespace(num_seeds=self.args.eval_rep_times, num_samples=self.args.eval_num_samples,
                                         batch_size=self.args.eval_batch_size, device=self.device, guidance_param = 1,
-                                        dataset=self.dataset, cond_mode='action',
+                                        dataset=self.dataset, unconstrained=self.args.unconstrained,
                                         model_path=os.path.join(self.save_dir, self.ckpt_file_name()))
             eval_dict = eval_humanact12_uestc.evaluate(eval_args, model=self.model, diffusion=self.diffusion, data=self.data.dataset)
             print(f'Evaluation results on {self.dataset}: {sorted(eval_dict["feats"].items())}')
             for k, v in eval_dict["feats"].items():
-                self.train_platform.report_scalar(name=k, value=np.array(v).astype(float).mean(), iteration=self.step, group_name='Eval')
+                if 'unconstrained' not in k:
+                    self.train_platform.report_scalar(name=k, value=np.array(v).astype(float).mean(), iteration=self.step, group_name='Eval')
+                else:
+                    self.train_platform.report_scalar(name=k, value=np.array(v).astype(float).mean(), iteration=self.step, group_name='Eval Unconstrained')
 
         end_eval = time.time()
         print(f'Evaluation time: {round(end_eval-start_eval)/60}min')

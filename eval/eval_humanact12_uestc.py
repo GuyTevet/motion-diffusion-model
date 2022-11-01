@@ -61,8 +61,6 @@ def main():
     else:
         args.num_samples = 1000
         args.num_seeds = 20
-    args.cond_mode = 'action' # temporary code till 'unconstrained' is implemented
-
 
     data_loader = get_dataset_loader(name=args.dataset, num_frames=60, batch_size=args.batch_size,)
 

@@ -2,6 +2,21 @@ import torch
 import numpy as np
 
 
+#adapted from action2motion
+def calculate_diversity(activations):
+    diversity_times = 200
+    num_motions = len(activations)
+
+    diversity = 0
+
+    first_indices = np.random.randint(0, num_motions, diversity_times)
+    second_indices = np.random.randint(0, num_motions, diversity_times)
+    for first_idx, second_idx in zip(first_indices, second_indices):
+        diversity += torch.dist(activations[first_idx, :],
+                                activations[second_idx, :])
+    diversity /= diversity_times
+    return diversity
+
 # from action2motion
 def calculate_diversity_multimodality(activations, labels, num_labels, unconstrained = False):
     diversity_times = 200

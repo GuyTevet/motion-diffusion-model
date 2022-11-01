@@ -24,6 +24,10 @@ If you find this code useful in your research, please cite:
 
 ## News
 
+📢 **4/Nov/22** - Added sampling, training and evaluation of unconstrained tasks.
+  Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_unconstrained_assets.sh; conda install -y -c anaconda scikit-learn
+` to adapt.
+
 📢 **3/Nov/22** - Added in-between and upper-body editing.
 
 📢 **31/Oct/22** - Added sampling, training and evaluation of action-to-motion tasks.
@@ -32,10 +36,6 @@ If you find this code useful in your research, please cite:
   Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_glove.sh; pip install clearml` to adapt.
 
 📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
-
-## ETAs
-
-* Unconstrained Motion: Nov 22
 
 
 ## Getting started
@@ -76,12 +76,20 @@ bash prepare/download_glove.sh
 </details>
 
 <details>
-  <summary><b>Text to Motion, Unconstrained</b></summary>
+  <summary><b>Action to Motion</b></summary>
 
 ```bash
 bash prepare/download_smpl_files.sh
-bash prepare/download_a2m_datasets.sh
 bash prepare/download_recognition_models.sh
+```
+</details>
+
+<details>
+  <summary><b>Unconstrained</b></summary>
+
+```bash
+bash prepare/download_smpl_files.sh
+bash prepare/download_recognition_unconstrained_models.sh
 ```
 </details>
 
@@ -125,9 +133,18 @@ cp -r ../HumanML3D/HumanML3D ./dataset/HumanML3D
 <details>
   <summary><b>Action to Motion</b></summary>
 
-**UESTC, HumanAct12** :
+**UESTC, HumanAct12** 
 ```bash
 bash prepare/download_a2m_datasets.sh
+```
+</details>
+
+<details>
+  <summary><b>Unconstrained</b></summary>
+
+**HumanAct12** 
+```bash
+bash prepare/download_unconstrained_datasets.sh
 ```
 </details>
 
@@ -168,6 +185,15 @@ Download the model(s) you wish to use, then unzip and place them in `./save/`.
 [humanact12](https://drive.google.com/file/d/154X8_Lgpec6Xj0glEGql7FVKqPYCdBFO/view?usp=sharing)
 
 [humanact12_no_fc](https://drive.google.com/file/d/1frKVMBYNiN5Mlq7zsnhDBzs9vGJvFeiQ/view?usp=sharing)
+
+</details>
+
+<details>
+  <summary><b>Unconstrained</b></summary>
+
+**HumanAct12**
+
+[humanact12_unconstrained](https://drive.google.com/file/d/1uG68m200pZK3pD-zTmPXu5XkgNpx_mEx/view?usp=share_link)
 
 </details>
 
@@ -217,6 +243,16 @@ python -m sample.generate --model_path ./save/humanact12/model000350000.pt --tex
 ```
 </details>
 
+<details>
+  <summary><b>Unconstrained</b></summary>
+
+```shell
+python -m sample.generate --model_path ./save/unconstrained/model000450000.pt --num_samples 10 --num_repetitions 3
+```
+
+By abuse of notation, (num_samples * num_repetitions) samples are created, and are visually organized in a display of num_samples rows and num_repetitions columns.
+
+</details>
 
 **You may also define:**
 * `--device` id.
@@ -317,6 +353,14 @@ python -m train.train_mdm --save_dir save/my_name --dataset {humanact12,uestc} -
 ```
 </details>
 
+<details>
+  <summary><b>Unconstrained</b></summary>
+
+```shell
+python -m train.train_mdm --save_dir save/my_name --dataset humanact12 --cond_mask_prob 0 --lambda_rcxyz 1 --lambda_vel 1 --lambda_fc 1  --unconstrained
+```
+</details>
+
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
 * Add `--train_platform_type {ClearmlPlatform, TensorboardPlatform}` to track results with either [ClearML](https://clear.ml/) or [Tensorboard](https://www.tensorflow.org/tensorboard).
@@ -349,19 +393,32 @@ python -m eval.eval_humanml --model_path ./save/kit_trans_enc_512/model000400000
 * The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
 
 ```shell
---model <path-to-model-ckpt> --eval_mode full
+python -m eval.eval_humanact12_uestc --model <path-to-model-ckpt> --eval_mode full
 ```
 where `path-to-model-ckpt` can be a path to any of the pretrained action-to-motion models listed above, or to a checkpoint trained by the user.
 
 </details>
 
 
+<details>
+  <summary><b>Unconstrained</b></summary>
+
+* Takes about 3 hours (on a single GPU)
+
+```shell
+python -m eval.eval_humanact12_uestc --model ./save/unconstrained/model000450000.pt --eval_mode full
+```
+
+Precision and recall are not computed to save computing time. If you wish to compute them, edit the file eval/a2m/gru_eval.py and change the string `fast=True` to `fast=False`.
+
+</details>
+
 ## Acknowledgments
 
 This code is standing on the shoulders of giants. We want to thank the following contributors
 that our code is based on:
 
-[guided-diffusion](https://github.com/openai/guided-diffusion), [MotionCLIP](https://github.com/GuyTevet/MotionCLIP), [text-to-motion](https://github.com/EricGuo5513/text-to-motion), [actor](https://github.com/Mathux/ACTOR), [joints2smpl](https://github.com/wangsen1312/joints2smpl).
+[guided-diffusion](https://github.com/openai/guided-diffusion), [MotionCLIP](https://github.com/GuyTevet/MotionCLIP), [text-to-motion](https://github.com/EricGuo5513/text-to-motion), [actor](https://github.com/Mathux/ACTOR), [joints2smpl](https://github.com/wangsen1312/joints2smpl), [MoDi](https://github.com/sigal-raab/MoDi).
 
 ## License
 This code is distributed under an [MIT LICENSE](LICENSE).

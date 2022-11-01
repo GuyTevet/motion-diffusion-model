@@ -143,8 +143,6 @@ class MDM(nn.Module):
         x: [batch_size, njoints, nfeats, max_frames], denoted x_t in the paper
         timesteps: [batch_size] (int)
         """
-        assert (y is not None) == (self.cond_mode != 'no_cond'
-                                   ), "must specify y if and only if the model is class-conditional"
         bs, njoints, nfeats, nframes = x.shape
         emb = self.embed_timestep(timesteps)  # [1, bs, d]
 

@@ -21,11 +21,17 @@ def parse_and_load_from_model(parser):
     assert os.path.exists(args_path), 'Arguments json file was not found!'
     with open(args_path, 'r') as fr:
         model_args = json.load(fr)
+
     for a in args_to_overwrite:
         if a in model_args.keys():
-            args.__dict__[a] = model_args[a]
+            setattr(args, a, model_args[a])
+
+        elif 'cond_mode' in model_args and model_args['cond_mode'] == 'no_cond': # backward compitability
+            setattr(args, 'unconstrained', True)
+
         else:
             print('Warning: was not able to load [{}], using default value [{}] instead.'.format(a, args.__dict__[a]))
+
     if args.cond_mask_prob == 0:
         args.guidance_param = 1
     return args
@@ -83,6 +89,9 @@ def add_model_options(parser):
     group.add_argument("--lambda_rcxyz", default=0.0, type=float, help="Joint positions loss.")
     group.add_argument("--lambda_vel", default=0.0, type=float, help="Joint velocity loss.")
     group.add_argument("--lambda_fc", default=0.0, type=float, help="Foot contact loss.")
+    group.add_argument("--unconstrained", action='store_true',
+                       help="Model is trained unconditionally. That is, it is constrained by neither text nor action. "
+                            "Currently tested on HumanAct12 only.")
 
 
 

@@ -20,7 +20,12 @@ def get_model_args(args, data):
     # default args
     clip_version = 'ViT-B/32'
     action_emb = 'tensor'
-    cond_mode = 'text' if args.dataset in ['kit', 'humanml'] else 'action'
+    if args.unconstrained:
+        cond_mode = 'no_cond'
+    elif args.dataset in ['kit', 'humanml']:
+        cond_mode = 'text'
+    else:
+        cond_mode = 'action'
     if hasattr(data.dataset, 'num_actions'):
         num_actions = data.dataset.num_actions
     else:
