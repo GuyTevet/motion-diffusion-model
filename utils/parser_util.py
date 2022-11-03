@@ -135,6 +135,20 @@ def add_sampling_options(parser):
     group.add_argument("--output_dir", default='', type=str,
                        help="Path to results dir (auto created by the script). "
                             "If empty, will create dir in parallel to checkpoint.")
+    group.add_argument("--num_samples", default=10, type=int,
+                       help="Maximal number of prompts to sample, "
+                            "if loading dataset from file, this field will be ignored.")
+    group.add_argument("--num_repetitions", default=3, type=int,
+                       help="Number of repetitions, per sample (text prompt/action)")
+    group.add_argument("--guidance_param", default=2.5, type=float,
+                       help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
+
+
+def add_generate_options(parser):
+    group = parser.add_argument_group('generate')
+    group.add_argument("--motion_length", default=6.0, type=float,
+                       help="The length of the sampled motion [in seconds]. "
+                            "Maximum is 9.8 for HumanML3D (text-to-motion), and 2.0 for HumanAct12 (action-to-motion)")
     group.add_argument("--input_text", default='', type=str,
                        help="Path to a text file lists text prompts to be synthesized. If empty, will take text prompts from dataset.")
     group.add_argument("--action_file", default='', type=str,
@@ -145,16 +159,24 @@ def add_sampling_options(parser):
                        help="A text prompt to be generated. If empty, will take text prompts from dataset.")
     group.add_argument("--action_name", default='', type=str,
                        help="An action name to be generated. If empty, will take text prompts from dataset.")
-    group.add_argument("--num_samples", default=10, type=int,
-                       help="Maximal number of prompts to sample, "
-                            "if loading dataset from file, this field will be ignored.")
-    group.add_argument("--num_repetitions", default=3, type=int,
-                       help="Number of repetitions, per sample (text prompt/action)")
-    group.add_argument("--motion_length", default=6.0, type=float,
-                       help="The length of the sampled motion [in seconds]. "
-                            "Maximum is 9.8 for HumanML3D (text-to-motion), and 2.0 for HumanAct12 (action-to-motion)")
-    group.add_argument("--guidance_param", default=2.5, type=float,
-                       help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
+
+
+def add_edit_options(parser):
+    group = parser.add_argument_group('edit')
+    group.add_argument("--edit_mode", default='in_between', choices=['in_between', 'upper_body'], type=str,
+                       help="Defines which parts of the input motion will be edited.\n"
+                            "(1) in_between - suffix and prefix motion taken from input motion, "
+                            "middle motion is generated.\n"
+                            "(2) upper_body - lower body joints taken from input motion, "
+                            "upper body is generated.")
+    group.add_argument("--text_condition", default='', type=str,
+                       help="Editing will be conditioned on this text prompt. "
+                            "If empty, will perform unconditioned editing.")
+    group.add_argument("--prefix_end", default=0.25, type=float,
+                       help="For in_between editing - Defines the end of input prefix (ratio from all frames).")
+    group.add_argument("--suffix_start", default=0.75, type=float,
+                       help="For in_between editing - Defines the start of input suffix (ratio from all frames).")
+
 
 def add_evaluation_options(parser):
     group = parser.add_argument_group('eval')
@@ -179,12 +201,23 @@ def train_args():
     return parser.parse_args()
 
 
-def sample_args():
+def generate_args():
     parser = ArgumentParser()
     # args specified by the user: (all other will be loaded from the model)
     add_base_options(parser)
     add_sampling_options(parser)
+    add_generate_options(parser)
     return parse_and_load_from_model(parser)
+
+
+def edit_args():
+    parser = ArgumentParser()
+    # args specified by the user: (all other will be loaded from the model)
+    add_base_options(parser)
+    add_sampling_options(parser)
+    add_edit_options(parser)
+    return parse_and_load_from_model(parser)
+
 
 def evaluation_parser():
     parser = ArgumentParser()
