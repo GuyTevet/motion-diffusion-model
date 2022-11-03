@@ -146,8 +146,6 @@ def main():
     with open(npy_path.replace('.npy', '_len.txt'), 'w') as fw:
         fw.write('\n'.join([str(l) for l in all_lengths]))
 
-    motion_scale = 0.003 if args.dataset == 'kit' else 1.3
-
     print(f"saving visualizations to [{out_path}]...")
     skeleton = paramUtil.kit_kinematic_chain if args.dataset == 'kit' else paramUtil.t2m_kinematic_chain
 
@@ -166,7 +164,7 @@ def main():
         animation_save_path = os.path.join(out_path, save_file)
         rep_files = [animation_save_path]
         print(f'[({sample_i}) "{caption}" | -> {save_file}]')
-        plot_3d_motion(animation_save_path, skeleton, motion * motion_scale, title=caption,
+        plot_3d_motion(animation_save_path, skeleton, motion, title=caption,
                        dataset=args.dataset, fps=fps, vis_mode='gt',
                        gt_frames=gt_frames_per_sample.get(sample_i, []))
         for rep_i in range(args.num_repetitions):
@@ -181,7 +179,7 @@ def main():
             animation_save_path = os.path.join(out_path, save_file)
             rep_files.append(animation_save_path)
             print(f'[({sample_i}) "{caption}" | Rep #{rep_i} | -> {save_file}]')
-            plot_3d_motion(animation_save_path, skeleton, motion*motion_scale, title=caption,
+            plot_3d_motion(animation_save_path, skeleton, motion, title=caption,
                            dataset=args.dataset, fps=fps, vis_mode=args.edit_mode,
                            gt_frames=gt_frames_per_sample.get(sample_i, []))
             # Credit for visualization: https://github.com/EricGuo5513/text-to-motion
