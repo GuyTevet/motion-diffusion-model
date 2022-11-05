@@ -68,7 +68,7 @@ class npy2obj:
         # Conversion of data for .pkl file for 'softcat477/SMPL-to-FBX/' 
         # Change 'FbxTime.eFrames60's in SMPL-to-FBX/FbxReadWriter.py to 'FbxTime.eFrames30'
         # Known issues: Glitches below 30 fps exports in 'softcat477/SMPL-to-FBX/' (20 fps expected)
-
+        import utils.rotation_conversions as geometry
         i = range(self.real_num_frames)
         poses_raw = []
         latest = None
@@ -84,7 +84,7 @@ class npy2obj:
         smpl_trans = np.array(trans_raw).reshape(self.real_num_frames, 3)*np.array([100, 1, 100])     
         
         data_dict2 = {'smpl_poses': smpl_poses,'smpl_trans': smpl_trans,}
-
+        import pickle
         with open(save_path +".pkl", 'wb') as pickle_file:
             pickle.dump(data_dict2, pickle_file)     
         # End of Conversion of data for .pkl file for 'softcat477/SMPL-to-FBX/'
