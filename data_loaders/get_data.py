@@ -7,10 +7,10 @@ def get_dataset_class(name):
         from .amass import AMASS
         return AMASS
     elif name == "uestc":
-        from .uestc import UESTC
+        from .a2m.uestc import UESTC
         return UESTC
     elif name == "humanact12":
-        from .humanact12poses import HumanAct12Poses
+        from .a2m.humanact12poses import HumanAct12Poses
         return HumanAct12Poses
     elif name == "humanml":
         from data_loaders.humanml.data.dataset import HumanML3D
@@ -45,7 +45,7 @@ def get_dataset_loader(name, batch_size, num_frames, split='train', hml_mode='tr
     collate = get_collate_fn(name, hml_mode)
 
     loader = DataLoader(
-        dataset, batch_size=batch_size, shuffle=True,  #(split == 'train'),
+        dataset, batch_size=batch_size, shuffle=True,
         num_workers=8, drop_last=True, collate_fn=collate
     )
 

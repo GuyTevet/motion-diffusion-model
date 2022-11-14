@@ -24,14 +24,10 @@ def list_cut_average(ll, intervals):
     return ll_new
 
 
-def plot_3d_motion(save_path, kinematic_tree, joints, title, figsize=(3, 3), fps=120, radius=3):
+def plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3, 3), fps=120, radius=3,
+                   vis_mode='default', gt_frames=[]):
     matplotlib.use('Agg')
 
-    # title_sp = title.split(' ')
-    # if len(title_sp) > 20:
-    #     title = '\n'.join([' '.join(title_sp[:10]), ' '.join(title_sp[10:20]), ' '.join(title_sp[20:])])
-    # elif len(title_sp) > 10:
-    #     title = '\n'.join([' '.join(title_sp[:10]), ' '.join(title_sp[10:])])
     title = '\n'.join(wrap(title, 20))
 
     def init():
@@ -58,19 +54,29 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, figsize=(3, 3), fps
 
     # (seq_len, joints_num, 3)
     data = joints.copy().reshape(len(joints), -1, 3)
+
+    # preparation related to specific datasets
+    if dataset == 'kit':
+        data *= 0.003  # scale for visualization
+    elif dataset == 'humanml':
+        data *= 1.3  # scale for visualization
+    elif dataset in ['humanact12', 'uestc']:
+        data *= -1.5 # reverse axes, scale for visualization
+
     fig = plt.figure(figsize=figsize)
     plt.tight_layout()
     ax = p3.Axes3D(fig)
     init()
     MINS = data.min(axis=0).min(axis=0)
     MAXS = data.max(axis=0).max(axis=0)
-    # colors = ['red', 'blue', 'black', 'red', 'blue',
-    #           'darkblue', 'darkblue', 'darkblue', 'darkblue', 'darkblue',
-    #           'darkred', 'darkred', 'darkred', 'darkred', 'darkred']
-    colors = ["#DD5A37", "#D69E00", "#B75A39", "#DD5A37", "#D69E00",
-              "#FF6D00", "#FF6D00", "#FF6D00", "#FF6D00", "#FF6D00",
-              "#DDB50E", "#DDB50E", "#DDB50E", "#DDB50E", "#DDB50E",]
-
+    colors_blue = ["#4D84AA", "#5B9965", "#61CEB9", "#34C1E2", "#80B79A"]  # GT color
+    colors_orange = ["#DD5A37", "#D69E00", "#B75A39", "#FF6D00", "#DDB50E"]  # Generation color
+    colors = colors_orange
+    if vis_mode == 'upper_body':  # lower body taken fixed to input motion
+        colors[0] = colors_blue[0]
+        colors[1] = colors_blue[1]
+    elif vis_mode == 'gt':
+        colors = colors_blue
 
     frame_number = data.shape[0]
     #     print(dataset.shape)
@@ -101,8 +107,8 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, figsize=(3, 3), fps
         #               color='blue')
         # #             ax = plot_xzPlane(ax, MINS[0], MAXS[0], 0, MINS[2], MAXS[2])
 
-        for i, (chain, color) in enumerate(zip(kinematic_tree, colors)):
-            #             print(color)
+        used_colors = colors_blue if index in gt_frames else colors
+        for i, (chain, color) in enumerate(zip(kinematic_tree, used_colors)):
             if i < 5:
                 linewidth = 4.0
             else:

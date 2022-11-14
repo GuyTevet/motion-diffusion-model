@@ -1,6 +1,7 @@
 name: mdm
 channels:
   - pytorch
+  - anaconda
   - conda-forge
   - defaults
 dependencies:
@@ -9,9 +10,9 @@ dependencies:
   - beautifulsoup4=4.11.1=pyha770c72_0
   - blas=1.0=mkl
   - brotlipy=0.7.0=py37h540881e_1004
-  - ca-certificates=2022.9.24=ha878542_0
+  - ca-certificates=2022.07.19=h06a4308_0
   - catalogue=2.0.8=py37h89c1867_0
-  - certifi=2022.9.24=pyhd8ed1ab_0
+  - certifi=2022.6.15=py37h06a4308_0
   - cffi=1.15.1=py37h74dc2b5_0
   - charset-normalizer=2.1.1=pyhd8ed1ab_0
   - colorama=0.4.5=pyhd8ed1ab_0
@@ -37,6 +38,7 @@ dependencies:
   - idna=3.4=pyhd8ed1ab_0
   - intel-openmp=2021.4.0=h06a4308_3561
   - jinja2=3.1.2=pyhd8ed1ab_1
+  - joblib=1.1.0=pyhd3eb1b0_0
   - jpeg=9b=h024ee3a_2
   - kiwisolver=1.4.2=py37h295c915_0
   - langcodes=3.3.0=pyhd8ed1ab_0
@@ -87,6 +89,7 @@ dependencies:
   - qt=5.9.7=h5867ecd_1
   - readline=8.1.2=h7f8727e_1
   - requests=2.28.1=pyhd8ed1ab_1
+  - scikit-learn=1.0.2=py37h51133e4_1
   - scipy=1.7.3=py37h6c91a56_2
   - setuptools=63.4.1=py37h06a4308_0
   - shellingham=1.5.0=pyhd8ed1ab_0
@@ -98,6 +101,7 @@ dependencies:
   - spacy-legacy=3.0.10=pyhd8ed1ab_0
   - spacy-loggers=1.0.3=pyhd8ed1ab_0
   - sqlite=3.39.3=h5082296_0
+  - threadpoolctl=2.2.0=pyh0d69192_0
   - tk=8.6.12=h1ccaba5_0
   - torchaudio=0.7.2=py37
   - torchvision=0.8.2=py37_cu110
@@ -113,10 +117,8 @@ dependencies:
   - pip:
     - blis==0.7.8
     - chumpy==0.70
-    - clearml==1.7.1
     - click==8.1.3
     - confection==0.0.2
-    - filelock==3.8.0
     - ftfy==6.1.1
     - importlib-metadata==5.0.0
     - lxml==4.9.1
