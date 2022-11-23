@@ -24,6 +24,8 @@ If you find this code useful in your research, please cite:
 
 ## News
 
+📢 **23/Nov/22** - Fixed issue evaluation issue (#42) - Please pull and run `bash prepare/download_t2m_evaluators.sh` from the top of the repo to adapt.
+
 📢 **4/Nov/22** - Added sampling, training and evaluation of unconstrained tasks.
   Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_unconstrained_assets.sh; conda install -y -c anaconda scikit-learn
 ` to adapt.
@@ -72,6 +74,7 @@ Download dependencies:
 ```bash
 bash prepare/download_smpl_files.sh
 bash prepare/download_glove.sh
+bash prepare/download_t2m_evaluators.sh
 ```
 </details>
 
