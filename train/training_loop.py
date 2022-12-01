@@ -266,7 +266,12 @@ class TrainLoop:
     def save(self):
         def save_checkpoint(params):
             state_dict = self.mp_trainer.master_params_to_state_dict(params)
-            # if dist.get_rank() == 0:
+
+            # Do not save CLIP weights
+            clip_weights = [e for e in state_dict.keys() if e.startswith('clip_model.')]
+            for e in clip_weights:
+                del state_dict[e]
+
             logger.log(f"saving model...")
             filename = self.ckpt_file_name()
             with bf.BlobFile(bf.join(self.save_dir, filename), "wb") as f:
