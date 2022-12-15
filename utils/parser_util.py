@@ -26,8 +26,9 @@ def parse_and_load_from_model(parser):
         if a in model_args.keys():
             setattr(args, a, model_args[a])
 
-        elif 'cond_mode' in model_args and model_args['cond_mode'] == 'no_cond': # backward compitability
-            setattr(args, 'unconstrained', True)
+        elif 'cond_mode' in model_args: # backward compitability
+            unconstrained = (model_args['cond_mode'] == 'no_cond')
+            setattr(args, 'unconstrained', unconstrained)
 
         else:
             print('Warning: was not able to load [{}], using default value [{}] instead.'.format(a, args.__dict__[a]))

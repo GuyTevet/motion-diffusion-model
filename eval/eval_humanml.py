@@ -279,7 +279,7 @@ if __name__ == '__main__':
     num_actions = gen_loader.dataset.num_actions
 
     logger.log("Creating model and diffusion...")
-    model, diffusion = create_model_and_diffusion(args)
+    model, diffusion = create_model_and_diffusion(args, gen_loader)
 
     logger.log(f"Loading checkpoints from [{args.model_path}]...")
     state_dict = torch.load(args.model_path, map_location='cpu')

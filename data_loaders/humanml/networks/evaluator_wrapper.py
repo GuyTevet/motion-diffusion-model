@@ -134,7 +134,7 @@ class EvaluatorMDMWrapper(object):
             'dim_pose': 263 if dataset_name == 'humanml' else 251,
             'dim_movement_enc_hidden': 512,
             'dim_movement_latent': 512,
-            'checkpoints_dir': '/disk1/guytevet/text-to-motion/checkpoints',
+            'checkpoints_dir': '.',
             'unit_length': 4,
         }
 
