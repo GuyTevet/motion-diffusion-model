@@ -38,6 +38,7 @@ class MDM(nn.Module):
         self.activation = activation
         self.clip_dim = clip_dim
         self.action_emb = kargs.get('action_emb', None)
+        self.device = kargs.get('device', None if torch.cuda.is_available() else 'cpu')
 
         self.input_feats = self.njoints * self.nfeats
 
@@ -105,8 +106,9 @@ class MDM(nn.Module):
     def load_and_freeze_clip(self, clip_version):
         clip_model, clip_preprocess = clip.load(clip_version, device='cpu',
                                                 jit=False)  # Must set jit=False for training
-        clip.model.convert_weights(
-            clip_model)  # Actually this line is unnecessary since clip by default already on float16
+        if str(self.device) != 'cpu':
+            clip.model.convert_weights(
+                clip_model)  # Actually this line is unnecessary since clip by default already on float16
 
         # Freeze CLIP weights
         clip_model.eval()
