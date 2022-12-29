@@ -64,14 +64,14 @@ JOINT_NAMES = [
 class SMPL(_SMPLLayer):
     """ Extension of the official SMPL implementation to support more joints """
 
-    def __init__(self, model_path=SMPL_MODEL_PATH, **kwargs):
-        kwargs["model_path"] = model_path
+    def __init__(self, model_path=None, joint_regressor_train_extra_path=None, **kwargs):
+        kwargs["model_path"] = model_path or SMPL_MODEL_PATH
 
         # remove the verbosity for the 10-shapes beta parameters
         with contextlib.redirect_stdout(None):
             super(SMPL, self).__init__(**kwargs)
             
-        J_regressor_extra = np.load(JOINT_REGRESSOR_TRAIN_EXTRA)
+        J_regressor_extra = np.load(joint_regressor_train_extra_path or JOINT_REGRESSOR_TRAIN_EXTRA)
         self.register_buffer('J_regressor_extra', torch.tensor(J_regressor_extra, dtype=torch.float32))
         vibe_indexes = np.array([JOINT_MAP[i] for i in JOINT_NAMES])
         a2m_indexes = vibe_indexes[action2motion_joints]

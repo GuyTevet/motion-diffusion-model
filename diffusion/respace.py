@@ -29,13 +29,12 @@ def space_timesteps(num_timesteps, section_counts):
     """
     if isinstance(section_counts, str):
         if section_counts.startswith("ddim"):
-            desired_count = int(section_counts[len("ddim") :])
-            for i in range(1, num_timesteps):
-                if len(range(0, num_timesteps, i)) == desired_count:
-                    return set(range(0, num_timesteps, i))
-            raise ValueError(
-                f"cannot create exactly {num_timesteps} steps with an integer stride"
-            )
+            desired_count = int(section_counts[len("ddim"):])
+            if desired_count > 1000:
+                raise ValueError(
+                    f"cannot create exactly {num_timesteps} steps with an integer stride"
+                )
+            return set(np.rint(np.arange(0, num_timesteps, num_timesteps / desired_count)).astype(int))
         section_counts = [int(x) for x in section_counts.split(",")]
     size_per = num_timesteps // len(section_counts)
     extra = num_timesteps % len(section_counts)
