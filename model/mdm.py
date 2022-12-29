@@ -11,7 +11,7 @@ class MDM(nn.Module):
     def __init__(self, modeltype, njoints, nfeats, num_actions, translation, pose_rep, glob, glob_rot,
                  latent_dim=256, ff_size=1024, num_layers=8, num_heads=4, dropout=0.1,
                  ablation=None, activation="gelu", legacy=False, data_rep='rot6d', dataset='amass', clip_dim=512,
-                 arch='trans_enc', emb_trans_dec=False, clip_version=None, smpl_model_path=None, joint_regressor_train_extra_path=None, **kargs):
+                 arch='trans_enc', emb_trans_dec=False, clip_version=None, clip_download_root=None, smpl_model_path=None, joint_regressor_train_extra_path=None, **kargs):
         super().__init__()
 
         self.legacy = legacy
@@ -86,7 +86,7 @@ class MDM(nn.Module):
                 print('EMBED TEXT')
                 print('Loading CLIP...')
                 self.clip_version = clip_version
-                self.clip_model = self.load_and_freeze_clip(clip_version)
+                self.clip_model = self.load_and_freeze_clip(clip_version, clip_download_root)
             if 'action' in self.cond_mode:
                 self.embed_action = EmbedAction(self.num_actions, self.latent_dim)
                 print('EMBED ACTION')
@@ -103,8 +103,8 @@ class MDM(nn.Module):
     def parameters_wo_clip(self):
         return [p for name, p in self.named_parameters() if not name.startswith('clip_model.')]
 
-    def load_and_freeze_clip(self, clip_version):
-        clip_model, clip_preprocess = clip.load(clip_version, device='cpu',
+    def load_and_freeze_clip(self, clip_version, clip_download_root):
+        clip_model, clip_preprocess = clip.load(clip_version, device='cpu', download_root=clip_download_root,
                                                 jit=False)  # Must set jit=False for training
         if str(self.device) != 'cpu':
             clip.model.convert_weights(
