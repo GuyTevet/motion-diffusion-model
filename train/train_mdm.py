@@ -13,6 +13,10 @@ from data_loaders.get_data import get_dataset_loader
 from utils.model_util import create_model_and_diffusion
 from train.train_platforms import ClearmlPlatform, TensorboardPlatform, NoPlatform  # required for the eval operation
 
+import torch
+if torch.cuda.is_available():
+    torch.backends.cudnn.benchmark = True
+
 def main():
     args = train_args()
     fixseed(args.seed)
