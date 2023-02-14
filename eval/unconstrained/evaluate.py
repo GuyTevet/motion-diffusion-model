@@ -57,7 +57,7 @@ def compute_features(model, iterator, device):
 def evaluate_unconstrained_metrics(generated_motions, device, fast):
 
     act_rec_model_path = './assets/actionrecognition/humanact12_gru_modi_struct.pth.tar'
-    dataset_path = './dataset/HumanAct12Poses/humanact12_modi_struct.npy'
+    dataset_path = './dataset/HumanAct12Poses/humanact12_unconstrained_modi_struct.npy'
 
     # initialize model
     act_rec_model = initialize_model(device, act_rec_model_path)
