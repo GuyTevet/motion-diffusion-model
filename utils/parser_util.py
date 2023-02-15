@@ -201,6 +201,16 @@ def add_evaluation_options(parser):
                        help="For classifier-free sampling - specifies the s parameter, as defined in the paper.")
 
 
+def get_cond_mode(args):
+    if args.unconstrained:
+        cond_mode = 'no_cond'
+    elif args.dataset in ['kit', 'humanml']:
+        cond_mode = 'text'
+    else:
+        cond_mode = 'action'
+    return cond_mode
+
+
 def train_args():
     parser = ArgumentParser()
     add_base_options(parser)
@@ -217,7 +227,15 @@ def generate_args():
     add_base_options(parser)
     add_sampling_options(parser)
     add_generate_options(parser)
-    return parse_and_load_from_model(parser)
+    args = parse_and_load_from_model(parser)
+    cond_mode = get_cond_mode(args)
+
+    if args.input_text or args.text_prompt and cond_mode != 'text':
+        raise Exception('Arguments input_text and text_prompt should not be used for an action condition. Please use action_file or action_name.')
+    elif args.action_file or args.action_name and cond_mode != 'action':
+        raise Exception('Arguments action_file and action_name should not be used for a text condition. Please use input_text or text_prompt.')
+
+    return args
 
 
 def edit_args():
