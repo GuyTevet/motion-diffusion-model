@@ -230,9 +230,9 @@ def generate_args():
     args = parse_and_load_from_model(parser)
     cond_mode = get_cond_mode(args)
 
-    if args.input_text or args.text_prompt and cond_mode != 'text':
+    if (args.input_text or args.text_prompt) and cond_mode != 'text':
         raise Exception('Arguments input_text and text_prompt should not be used for an action condition. Please use action_file or action_name.')
-    elif args.action_file or args.action_name and cond_mode != 'action':
+    elif (args.action_file or args.action_name) and cond_mode != 'action':
         raise Exception('Arguments action_file and action_name should not be used for a text condition. Please use input_text or text_prompt.')
 
     return args
