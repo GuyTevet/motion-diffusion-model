@@ -24,11 +24,11 @@ If you find this code useful in your research, please cite:
 
 ## Checkout MDM Follow-ups (partial list)
 
-🐉 [SinMDM](https://sinmdm.github.io/SinMDM-page/) - Learn single motion motifs - even for non-humanoid characters.
+🐉 [SinMDM](https://sinmdm.github.io/SinMDM-page/) - Learns single motion motifs - even for non-humanoid characters.
 
-👯 [PriorMDM](https://priormdm.github.io/priorMDM-page/) - use MDM as a generative prior, enabling new generation tasks with few examples or even no data at all.
+👯 [PriorMDM](https://priormdm.github.io/priorMDM-page/) - Uses MDM as a generative prior, enabling new generation tasks with few examples or even no data at all.
 
-🍏 [PhysDiff](https://nvlabs.github.io/PhysDiff/) - adds physical guidance to MDM to generate more realistic results.
+🍏 [PhysDiff](https://nvlabs.github.io/PhysDiff/) - Adds physical guidance to MDM to generate more realistic results.
 
 💃 [EDGE](https://edge-dance.github.io/) - Learns music-to-dance motion with MDM and off-the-shelf audio encoder.
 
