@@ -35,6 +35,8 @@ If you find this code useful in your research, please cite:
 
 ## News
 
+📢 **1/Jun/23** - Fixed generation issue (#104) - Please pull to improve generation results.
+
 📢 **23/Nov/22** - Fixed evaluation issue (#42) - Please pull and run `bash prepare/download_t2m_evaluators.sh` from the top of the repo to adapt.
 
 📢 **4/Nov/22** - Added sampling, training and evaluation of unconstrained tasks.
