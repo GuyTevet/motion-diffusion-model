@@ -14,11 +14,13 @@ Please visit our [**webpage**](https://guytevet.github.io/mdm-page/) for more de
 If you find this code useful in your research, please cite:
 
 ```
-@article{tevet2022human,
-  title={Human Motion Diffusion Model},
-  author={Tevet, Guy and Raab, Sigal and Gordon, Brian and Shafir, Yonatan and Bermano, Amit H and Cohen-Or, Daniel},
-  journal={arXiv preprint arXiv:2209.14916},
-  year={2022}
+@inproceedings{
+tevet2023human,
+title={Human Motion Diffusion Model},
+author={Guy Tevet and Sigal Raab and Brian Gordon and Yoni Shafir and Daniel Cohen-or and Amit Haim Bermano},
+booktitle={The Eleventh International Conference on Learning Representations },
+year={2023},
+url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 }
 ```
 
