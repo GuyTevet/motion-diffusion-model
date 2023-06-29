@@ -6,7 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# Stuff that needed to be downloaded
+assets/actionrecognition/
+body_models/
+dataset/
+glove/
+save/
+
 # Distribution / packaging
+.idea/
 .Python
 build/
 develop-eggs/
