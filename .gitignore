@@ -4,7 +4,7 @@ t2m/
 kit/
 body_models/
 
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLPL files
 __pycache__/
 *.py[cod]
 *$py.class
