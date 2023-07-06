@@ -1,4 +1,4 @@
-# MDM: Human Motion Diffusion Model asdasd
+# MDM: Human Motion Diffusion Model
 
 
 [![arXiv](https://img.shields.io/badge/arXiv-<2209.14916>-<COLOR>.svg)](https://arxiv.org/abs/2209.14916)
