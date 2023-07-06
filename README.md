@@ -1,6 +1,6 @@
 # MDM: Human Motion Diffusion Model
 
-## This is a forked MDM repo (We fix some bug in HumanML3D, and use new motion representation to retrain the MDM model ！)
+## This is a forked MDM repo (We fix some bug in HumanML3D, and use new motion representation to retrain the MDM model !!)
 [![arXiv](https://img.shields.io/badge/arXiv-<2209.14916>-<COLOR>.svg)](https://arxiv.org/abs/2209.14916)
 <a href="https://replicate.com/arielreplicate/motion_diffusion_model"><img src="https://replicate.com/arielreplicate/motion_diffusion_model/badge"></a>
 
