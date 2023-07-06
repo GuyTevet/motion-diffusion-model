@@ -55,7 +55,9 @@ class Skeleton(object):
     def inverse_kinematics_np(self, joints, face_joint_idx, smooth_forward=False):
         assert len(face_joint_idx) == 4
         '''Get Forward Direction'''
-        l_hip, r_hip, sdr_r, sdr_l = face_joint_idx
+        # l_hip, r_hip, sdr_r, sdr_l = face_joint_idx
+        #revised by HL
+        r_hip, l_hip, sdr_r, sdr_l = face_joint_idx
         across1 = joints[:, r_hip] - joints[:, l_hip]
         across2 = joints[:, sdr_r] - joints[:, sdr_l]
         across = across1 + across2
@@ -71,7 +73,9 @@ class Skeleton(object):
 
         '''Get Root Rotation'''
         target = np.array([[0,0,1]]).repeat(len(forward), axis=0)
-        root_quat = qbetween_np(forward, target)
+         # 2023_3_23 revised by HL
+        # root_quat = qbetween_np(forward, target)
+        root_quat = qbetween_np(target, forward)
 
         '''Inverse Kinematics'''
         # quat_params (batch_size, joints_num, 4)
