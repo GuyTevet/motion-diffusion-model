@@ -56,7 +56,7 @@ def edit_in_between():
 
 def training():
     _sys.argv.append('--save_dir')
-    _sys.argv.append(r'X:\Git\motion-diffusion-model\save_model_5')
+    _sys.argv.append(r'X:\Git\motion-diffusion-model\save_model')
     _sys.argv.append('--dataset')
     _sys.argv.append('humanact12')
     _sys.argv.append('--cond_mask_prob')
@@ -116,4 +116,4 @@ def save_to_onnx():
                       opset_version=12)
 
 if __name__ == "__main__":
-    unconstrained_motion()
+    edit_in_between()
