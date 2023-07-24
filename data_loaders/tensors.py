@@ -3,8 +3,8 @@ import torch
 def lengths_to_mask(lengths, max_len):
     # max_len = max(lengths)
     mask = torch.arange(max_len, device=lengths.device).expand(len(lengths), max_len) < lengths.unsqueeze(1)
-    return mask
-    
+    return mask # B max_len,
+
 
 def collate_tensors(batch):
     dims = batch[0].dim()
@@ -59,9 +59,9 @@ def t2m_collate(batch):
     # batch.sort(key=lambda x: x[3], reverse=True)
     adapted_batch = [{
         'inp': torch.tensor(b[4].T).float().unsqueeze(1), # [seqlen, J] -> [J, 1, seqlen]
-        'text': b[2], #b[0]['caption']
-        'tokens': b[6],
-        'lengths': b[5],
+        'text': b[2], #b[0]['caption'] 
+        'tokens': b[6],  # row_token not word embeddings
+        'lengths': b[5],  # motion length
     } for b in batch]
     return collate(adapted_batch)
 

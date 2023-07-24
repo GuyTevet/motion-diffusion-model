@@ -12,7 +12,7 @@ def space_timesteps(num_timesteps, section_counts):
     of the original process.
 
     For example, if there's 300 timesteps and the section counts are [10,15,20]
-    then the first 100 timesteps are strided to be 10 timesteps, the second 100
+        then the first 100 timesteps are strided to be 10 timesteps, the second 100
     are strided to be 15 timesteps, and the final 100 are strided to be 20.
 
     If the stride is a string starting with "ddim", then the fixed striding
@@ -91,7 +91,7 @@ class SpacedDiffusion(GaussianDiffusion):
     ):  # pylint: disable=signature-differs
         return super().p_mean_variance(self._wrap_model(model), *args, **kwargs)
 
-    def training_losses(
+    def training_losses( 
         self, model, *args, **kwargs
     ):  # pylint: disable=signature-differs
         return super().training_losses(self._wrap_model(model), *args, **kwargs)

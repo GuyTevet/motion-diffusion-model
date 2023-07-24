@@ -742,8 +742,8 @@ class HumanML3D(data.Dataset):
         print('Loading dataset %s ...' % opt.dataset_name)
 
         if mode == 'gt':
-            # used by T2M models (including evaluators)
-            self.mean = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_mean.npy'))
+            # used by T2M models (including evaluators) 
+            self.mean = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_mean.npy')) # This mean data is different from original HumanML3D data
             self.std = np.load(pjoin(opt.meta_dir, f'{opt.dataset_name}_std.npy'))
         elif mode in ['train', 'eval', 'text_only']:
             # used by our models
