@@ -32,11 +32,13 @@ class npy2obj:
         self.bs, self.njoints, self.nfeats, self.nframes = self.motions['motion'].shape
         self.real_num_frames = self.motions['lengths'][self.absl_idx]
 
-        self.vertices = self.rot2xyz(torch.tensor(self.motions['motion']), mask=None,
+        self.vertices, self.rotations, self.global_orient = self.rot2xyz(torch.tensor(self.motions['motion']), mask=None,
                                      pose_rep='rot6d', translation=True, glob=True,
                                      jointstype='vertices',
                                      # jointstype='smpl',  # for joint locations
-                                     vertstrans=True)
+                                     vertstrans=True,
+                                     get_rotations_back=True)
+
         self.root_loc = self.motions['motion'][:, -1, :3, :].reshape(1, 1, 3, -1)
         self.vertices += self.root_loc
 
@@ -62,5 +64,24 @@ class npy2obj:
             'vertices': self.vertices[0, :, :, :self.real_num_frames],
             'text': self.motions['text'][0],
             'length': self.real_num_frames,
+            'rotations': self.rotations,
+            'global_orient': self.global_orient,
         }
         np.save(save_path, data_dict)
+
+    def save_pickle(self, save_path):
+        data_dict = {
+            'motion': self.motions['motion'][0, :, :, :self.real_num_frames].numpy(),
+            'thetas': self.motions['motion'][0, :-1, :, :self.real_num_frames].numpy(),
+            'root_translation': self.motions['motion'][0, -1, :3, :self.real_num_frames].numpy(),
+            'faces': self.faces,
+            'vertices': self.vertices[0, :, :, :self.real_num_frames],
+            'text': self.motions['text'][0],
+            'length': self.real_num_frames,
+            'rotations': self.rotations.numpy(),
+            'global_orient': self.global_orient.numpy(),
+        }
+
+        import pickle
+        with open(save_path, 'wb') as handle:
+            pickle.dump(data_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)

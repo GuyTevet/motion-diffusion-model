@@ -4,7 +4,7 @@ from visualize import vis_utils
 import shutil
 from tqdm import tqdm
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_path", type=str, required=True, help='stick figure mp4 file to be rendered.')
     parser.add_argument("--cuda", type=bool, default=True, help='')
@@ -16,6 +16,7 @@ if __name__ == '__main__':
     sample_i, rep_i = [int(e) for e in parsed_name.split('_')]
     npy_path = os.path.join(os.path.dirname(params.input_path), 'results.npy')
     out_npy_path = params.input_path.replace('.mp4', '_smpl_params.npy')
+    out_pickle_path = params.input_path.replace('.mp4', '_smpl_params.pickle')
     assert os.path.exists(npy_path)
     results_dir = params.input_path.replace('.mp4', '_obj')
     if os.path.exists(results_dir):
@@ -31,3 +32,10 @@ if __name__ == '__main__':
 
     print('Saving SMPL params to [{}]'.format(os.path.abspath(out_npy_path)))
     npy2obj.save_npy(out_npy_path)
+
+    print('Saving SMPL params to [{}]'.format(os.path.abspath(out_pickle_path)))
+    npy2obj.save_pickle(out_pickle_path)
+
+if __name__ == '__main__':
+    main()
+

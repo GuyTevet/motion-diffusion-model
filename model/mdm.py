@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import clip
 from model.rotation2xyz import Rotation2xyz
+import torch as th
 
 
 
@@ -138,7 +139,7 @@ class MDM(nn.Module):
             texts = clip.tokenize(raw_text, truncate=True).to(device) # [bs, context_length] # if n_tokens > 77 -> will truncate
         return self.clip_model.encode_text(texts).float()
 
-    def forward(self, x, timesteps, y=None):
+    def forward(self, x, timesteps, y=dict()):
         """
         x: [batch_size, njoints, nfeats, max_frames], denoted x_t in the paper
         timesteps: [batch_size] (int)
@@ -218,6 +219,10 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 
 
+class SiLU2(nn.Module):
+    def forward(self, x):
+        return x * th.sigmoid(x)
+
 class TimestepEmbedder(nn.Module):
     def __init__(self, latent_dim, sequence_pos_encoder):
         super().__init__()
@@ -227,7 +232,7 @@ class TimestepEmbedder(nn.Module):
         time_embed_dim = self.latent_dim
         self.time_embed = nn.Sequential(
             nn.Linear(self.latent_dim, time_embed_dim),
-            nn.SiLU(),
+            SiLU2(),
             nn.Linear(time_embed_dim, time_embed_dim),
         )
 
