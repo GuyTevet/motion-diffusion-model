@@ -148,7 +148,11 @@ class MDM(nn.Module):
 
         force_mask = y.get('uncond', False)
         if 'text' in self.cond_mode:
-            enc_text = self.encode_text(y['text'])
+            if 'text' in y:
+                text_embed = self.encode_text(y['text'])
+                del y['text']
+                y['text_embed'] = text_embed
+            enc_text = y["text_embed"]
             emb += self.embed_text(self.mask_cond(enc_text, force_mask=force_mask))
         if 'action' in self.cond_mode:
             action_emb = self.embed_action(y['action'])
