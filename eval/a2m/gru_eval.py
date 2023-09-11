@@ -40,7 +40,7 @@ class NewDataloader:
                                                     translation=True, jointstype='smpl', vertstrans=True, betas=None,
                                                     beta=0, glob_rot=None, get_rotations_back=False)
                 batch["lengths"] = model_kwargs['y']['lengths'].to(device)
-                if unconstrained:  # proceed only if not running unconstrained
+                if not unconstrained:  # proceed only if not running unconstrained
                     batch["y"] = model_kwargs['y']['action'].squeeze().long().cpu()  # using torch.long so lengths/action will be used as indices
                 self.batches.append(batch)
 

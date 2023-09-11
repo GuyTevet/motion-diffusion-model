@@ -1,10 +1,10 @@
 import os
 import subprocess
-import typing
+from typing import Any, List, Optional
 from argparse import Namespace
 
 import torch
-from cog import BasePredictor, Input, Path
+from cog import BasePredictor, Input, Path, BaseModel
 
 import data_loaders.humanml.utils.paramUtil as paramUtil
 from data_loaders.get_data import get_dataset_loader
@@ -14,12 +14,18 @@ from data_loaders.tensors import collate
 from model.cfg_sampler import ClassifierFreeSampleModel
 from utils import dist_util
 from utils.model_util import create_model_and_diffusion, load_model_wo_clip
+from visualize.motions2hik import motions2hik
 from sample.generate import construct_template_variables
 
 """
 In case of matplot lib issues it may be needed to delete model/data_loaders/humanml/utils/plot_script.py" in lines 89~92 as
 suggested in https://github.com/GuyTevet/motion-diffusion-model/issues/6
 """
+
+
+class ModelOutput(BaseModel):
+    json_file: Optional[Any]
+    animation: Optional[List[Path]]
 
 
 def get_args():
@@ -78,8 +84,16 @@ class Predictor(BasePredictor):
             self,
             prompt: str = Input(default="the person walked forward and is picking up his toolbox."),
             num_repetitions: int = Input(default=3, description="How many"),
-
-    ) -> typing.List[Path]:
+            output_format: str = Input(
+                description='Choose the format of the output, either an animation or a json file of the animation data.\
+                The json format is: {"thetas": [...], "root_translation": [...], "joint_map": [...]}, where "thetas" \
+                is an [nframes x njoints x 3] array of joint rotations in degrees, "root_translation" is an [nframes x 3] \
+                array of (X, Y, Z) positions of the root, and "joint_map" is a list mapping the SMPL joint index to the\
+                corresponding HumanIK joint name',
+                default="animation",
+                choices=["animation", "json_file"],
+            ),
+    ) -> ModelOutput:
         args = self.args
         args.num_repetitions = int(num_repetitions)
 
@@ -126,10 +140,13 @@ class Predictor(BasePredictor):
 
         all_motions = sample.cpu().numpy()
 
+        if output_format == 'json_file':
+            data_dict = motions2hik(all_motions)
+            return ModelOutput(json_file=data_dict)
+
         caption = str(prompt)
 
         skeleton = paramUtil.t2m_kinematic_chain
-
 
         sample_print_template, row_print_template, all_print_template, \
             sample_file_template, row_file_template, all_file_template = construct_template_variables(
@@ -147,5 +164,4 @@ class Predictor(BasePredictor):
 
             replicate_fnames.append(Path(save_file))
 
-        return replicate_fnames
-
+        return ModelOutput(animation=replicate_fnames)

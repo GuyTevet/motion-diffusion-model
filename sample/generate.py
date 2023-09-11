@@ -113,7 +113,8 @@ def main():
 
         sample = sample_fn(
             model,
-            (args.batch_size, model.njoints, model.nfeats, n_frames),
+            # (args.batch_size, model.njoints, model.nfeats, n_frames),  # BUG FIX - this one caused a mismatch between training and inference
+            (args.batch_size, model.njoints, model.nfeats, max_frames),  # BUG FIX
             clip_denoised=False,
             model_kwargs=model_kwargs,
             skip_timesteps=0,  # 0 is the default value - i.e. don't skip any step
@@ -248,7 +249,8 @@ def load_dataset(args, max_frames, n_frames):
                               num_frames=max_frames,
                               split='test',
                               hml_mode='text_only')
-    data.fixed_length = n_frames
+    if args.dataset in ['kit', 'humanml']:
+        data.dataset.t2m_dataset.fixed_length = n_frames
     return data
 
 

@@ -1,6 +1,7 @@
 from model.mdm import MDM
 from diffusion import gaussian_diffusion as gd
 from diffusion.respace import SpacedDiffusion, space_timesteps
+from utils.parser_util import get_cond_mode
 
 
 def load_model_wo_clip(model, state_dict):
@@ -20,12 +21,7 @@ def get_model_args(args, data):
     # default args
     clip_version = 'ViT-B/32'
     action_emb = 'tensor'
-    if args.unconstrained:
-        cond_mode = 'no_cond'
-    elif args.dataset in ['kit', 'humanml']:
-        cond_mode = 'text'
-    else:
-        cond_mode = 'action'
+    cond_mode = get_cond_mode(args)
     if hasattr(data.dataset, 'num_actions'):
         num_actions = data.dataset.num_actions
     else:
