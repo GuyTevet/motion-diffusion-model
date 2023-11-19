@@ -38,7 +38,7 @@ class npy2obj:
                                      # jointstype='smpl',  # for joint locations
                                      vertstrans=True)
         self.root_loc = self.motions['motion'][:, -1, :3, :].reshape(1, 1, 3, -1)
-        self.vertices += self.root_loc
+        # self.vertices += self.root_loc
 
     def get_vertices(self, sample_i, frame_i):
         return self.vertices[sample_i, :, :, frame_i].squeeze().tolist()
