@@ -30,9 +30,7 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 
 👯 [PriorMDM](https://priormdm.github.io/priorMDM-page/) - Uses MDM as a generative prior, enabling new generation tasks with few examples or even no data at all.
 
-🍏 [PhysDiff](https://nvlabs.github.io/PhysDiff/) - Adds physical guidance to MDM to generate more realistic results.
-
-💃 [EDGE](https://edge-dance.github.io/) - Learns music-to-dance motion with MDM and off-the-shelf audio encoder.
+💃 [MAS](https://guytevet.github.io/mas-page/) - Generating intricate 3D motions (including non-humanoid) using 2D diffusion models trained on in-the-wild videos.
 
 
 ## News
