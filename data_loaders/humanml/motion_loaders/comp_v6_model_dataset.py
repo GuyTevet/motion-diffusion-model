@@ -212,7 +212,7 @@ class CompMDMGeneratedDataset(Dataset):
                             'length': model_kwargs['y']['lengths'][bs_i].cpu().numpy(),
                             'caption': model_kwargs['y']['text'][bs_i],
                             'tokens': tokens[bs_i],
-                            # Fixed cap_len calculation (changed from from len(tokens[bs_i]))
+                            # Fixed cap_len calculation, changed from len(tokens[bs_i])
                             # Lead to improved R-precision and Multimodal Dist.
                             # issue: https://github.com/GuyTevet/motion-diffusion-model/issues/182
                             'cap_len': tokens[bs_i].index('eos/OTHER') + 1, 
