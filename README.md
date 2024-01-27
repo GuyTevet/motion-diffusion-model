@@ -34,6 +34,8 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 
 
 ## News
+📢 **25/Jan/24** - Fixed bug in evalutation code (#182) - Please use the fixed results when citing MDM.<br>
+![fixed_results](assets/fixed_results_caplen_bug.png)
 
 📢 **1/Jun/23** - Fixed generation issue (#104) - Please pull to improve generation results.
 
