@@ -207,12 +207,16 @@ class CompMDMGeneratedDataset(Dataset):
                     )
 
                     if t == 0:
-                        sub_dicts = [{'motion': sample[bs_i].squeeze().permute(1,0).cpu().numpy(),
-                                    'length': model_kwargs['y']['lengths'][bs_i].cpu().numpy(),
-                                    'caption': model_kwargs['y']['text'][bs_i],
-                                    'tokens': tokens[bs_i],
-                                    'cap_len': len(tokens[bs_i]),
-                                    } for bs_i in range(dataloader.batch_size)]
+                        sub_dicts = [{
+                            'motion': sample[bs_i].squeeze().permute(1, 0).cpu().numpy(),
+                            'length': model_kwargs['y']['lengths'][bs_i].cpu().numpy(),
+                            'caption': model_kwargs['y']['text'][bs_i],
+                            'tokens': tokens[bs_i],
+                            # Fixed cap_len calculation, changed from len(tokens[bs_i])
+                            # Lead to improved R-precision and Multimodal Dist.
+                            # issue: https://github.com/GuyTevet/motion-diffusion-model/issues/182
+                            'cap_len': tokens[bs_i].index('eos/OTHER') + 1, 
+                            } for bs_i in range(dataloader.batch_size)]
                         generated_motion += sub_dicts
 
                     if is_mm:
