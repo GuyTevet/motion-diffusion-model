@@ -10,6 +10,31 @@ Please visit our [**webpage**](https://guytevet.github.io/mdm-page/) for more de
 
 ![teaser](https://github.com/GuyTevet/mdm-page/raw/main/static/figures/github.gif)
 
+## News
+
+📢 **12/Apr/24** - MDM inference is now 2X faster 🤩🤩🤩 This was made possible by [calling CLIP just once and caching the result](https://github.com/GuyTevet/motion-diffusion-model/commit/94c173ff8bb11362e45dd9262751f07bf9293660), and is backward compatible with older models.
+
+📢 **25/Jan/24** - Fixed bug in evalutation code (#182) - Please use the fixed results when citing MDM.<br>
+![fixed_results](assets/fixed_results_caplen_bug.png)
+
+📢 **1/Jun/23** - Fixed generation issue (#104) - Please pull to improve generation results.
+
+📢 **23/Nov/22** - Fixed evaluation issue (#42) - Please pull and run `bash prepare/download_t2m_evaluators.sh` from the top of the repo to adapt.
+
+📢 **4/Nov/22** - Added sampling, training and evaluation of unconstrained tasks.
+  Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_unconstrained_assets.sh; conda install -y -c anaconda scikit-learn
+` to adapt.
+
+📢 **3/Nov/22** - Added in-between and upper-body editing.
+
+📢 **31/Oct/22** - Added sampling, training and evaluation of action-to-motion tasks.
+
+📢 **9/Oct/22** - Added training and evaluation scripts. 
+  Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_glove.sh; pip install clearml` to adapt.
+
+📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
+
+
 #### Bibtex
 If you find this code useful in your research, please cite:
 
@@ -33,26 +58,6 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 💃 [MAS](https://guytevet.github.io/mas-page/) - Generating intricate 3D motions (including non-humanoid) using 2D diffusion models trained on in-the-wild videos.
 
 
-## News
-📢 **25/Jan/24** - Fixed bug in evalutation code (#182) - Please use the fixed results when citing MDM.<br>
-![fixed_results](assets/fixed_results_caplen_bug.png)
-
-📢 **1/Jun/23** - Fixed generation issue (#104) - Please pull to improve generation results.
-
-📢 **23/Nov/22** - Fixed evaluation issue (#42) - Please pull and run `bash prepare/download_t2m_evaluators.sh` from the top of the repo to adapt.
-
-📢 **4/Nov/22** - Added sampling, training and evaluation of unconstrained tasks.
-  Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_unconstrained_assets.sh; conda install -y -c anaconda scikit-learn
-` to adapt.
-
-📢 **3/Nov/22** - Added in-between and upper-body editing.
-
-📢 **31/Oct/22** - Added sampling, training and evaluation of action-to-motion tasks.
-
-📢 **9/Oct/22** - Added training and evaluation scripts. 
-  Note slight env changes adapting to the new code. If you already have an installed environment, run `bash prepare/download_glove.sh; pip install clearml` to adapt.
-
-📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
 
 
 ## Getting started
