@@ -637,6 +637,10 @@ class GaussianDiffusion:
         if dump_steps is not None:
             dump = []
 
+        if 'text' in model_kwargs['y'].keys():
+            # encoding once instead of each iteration saves lots of time
+            model_kwargs['y']['text_embed'] = model.encode_text(model_kwargs['y']['text'])
+        
         for i, sample in enumerate(self.p_sample_loop_progressive(
             model,
             shape,

@@ -20,6 +20,7 @@ class ClassifierFreeSampleModel(nn.Module):
         self.nfeats = self.model.nfeats
         self.data_rep = self.model.data_rep
         self.cond_mode = self.model.cond_mode
+        self.encode_text = self.model.encode_text
 
     def forward(self, x, timesteps, y=None):
         cond_mode = self.model.cond_mode
