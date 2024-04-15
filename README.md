@@ -10,12 +10,28 @@ Please visit our [**webpage**](https://guytevet.github.io/mdm-page/) for more de
 
 ![teaser](https://github.com/GuyTevet/mdm-page/raw/main/static/figures/github.gif)
 
+## MDM is now 40X faster 🤩🤩🤩 (~0.4 sec/sample)
+
+### How come?!?
+
+(1) We released the [50 diffusion steps model](https://drive.google.com/file/d/1cfadR1eZ116TIdXK7qDX1RugAerEiJXr/view?usp=sharing) (instead of 1000 steps) which runs 20X faster with comparable results.
+
+(2) [Calling CLIP just once and caching the result](https://github.com/GuyTevet/motion-diffusion-model/commit/94c173ff8bb11362e45dd9262751f07bf9293660) runs 2X faster for all models. Please pull.
+
+## MDM results to cite in your paper (The original model used in the paper)
+
+Performance improvement is due to an evaluation bug fix. BLUE marks fixed entries compared to the paper.
+![fixed_results](assets/fixed_results.png)
+
+You can use [this](assets/fixed_results.tex) `.tex` file.
+
 ## News
+
+📢 **15/Apr/24** - Released a [50 diffusion steps model](https://drive.google.com/file/d/1cfadR1eZ116TIdXK7qDX1RugAerEiJXr/view?usp=sharing) (instead of 1000 steps) which runs 20X faster 🤩🤩🤩 with comparable results.
 
 📢 **12/Apr/24** - MDM inference is now 2X faster 🤩🤩🤩 This was made possible by [calling CLIP just once and caching the result](https://github.com/GuyTevet/motion-diffusion-model/commit/94c173ff8bb11362e45dd9262751f07bf9293660), and is backward compatible with older models.
 
 📢 **25/Jan/24** - Fixed bug in evalutation code (#182) - Please use the fixed results when citing MDM.<br>
-![fixed_results](assets/fixed_results_caplen_bug.png)
 
 📢 **1/Jun/23** - Fixed generation issue (#104) - Please pull to improve generation results.
 
@@ -183,7 +199,9 @@ Download the model(s) you wish to use, then unzip and place them in `./save/`.
 
 **HumanML3D**
 
-[humanml-encoder-512](https://drive.google.com/file/d/1PE0PK8e5a5j-7-Xhs5YET5U5pGh0c821/view?usp=sharing) (best model)
+[humanml-encoder-512-50steps](https://drive.google.com/file/d/1cfadR1eZ116TIdXK7qDX1RugAerEiJXr/view?usp=sharing) - Runs 20X faster with comparable performance!
+
+[humanml-encoder-512](https://drive.google.com/file/d/1PE0PK8e5a5j-7-Xhs5YET5U5pGh0c821/view?usp=sharing) (best model used in the paper)
 
 [humanml-decoder-512](https://drive.google.com/file/d/1q3soLadvVh7kJuJPd2cegMNY2xVuVudj/view?usp=sharing)
 

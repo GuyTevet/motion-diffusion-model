@@ -1,0 +1,25 @@
+
+% add the following to main:
+% \usepackage{xcolor}
+% \usepackage{soul}
+% \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
+% \definecolor{beaublue}{rgb}{0.74, 0.83, 0.9}
+
+
+\begin{tabular}{lccccccc}
+\toprule
+\multirow{2}{2.cm}{\centering Method} &
+\multirow{2}{2.cm}{\centering R Precision top 1$\uparrow$} & 
+\multirow{2}{2.cm}{\centering R Precision top 2$\uparrow$} & 
+\multirow{2}{2.cm}{\centering R Precision top 3$\uparrow$} & 
+\multirow{2}{1.5cm}{\centering FID$\downarrow$} & \multirow{2}{2.5cm}{\centering Multimodal Dist$\downarrow$} & \multirow{2}{2cm}{\centering Diversity$\rightarrow$} & \multirow{2}{2cm}{\centering Multimodality$\uparrow$} \\
+\\
+
+\midrule
+Real & $0.512^{\pm.002}$ & $0.702^{\pm.002}$ & $0.797^{\pm.002}$ & $0.002^{\pm.000}$ & $2.97^{\pm.008}$ & $9.50^{\pm.065}$ & -\\ 
+
+\ourmethod{} (paper model) & $0.418^{\pm.005}$ & $0.604^{\pm.005}$ & \hlfancy{beaublue}{${{0.707^{\pm.004}}}$} & $0.489^{\pm.025}$ & \hlfancy{beaublue}{${3.63^{\pm.023}}$} & $9.45^{\pm.066}$ & ${2.87^{\pm.111}}$  \\
+
+\ourmethod{}-50steps (20X faster) & $0.455^{\pm.006}$ & $0.645^{\pm.007}$ & {${{0.749^{\pm.006}}}$} & $0.489^{\pm.047}$ & {${3.33^{\pm.025}}$} & $9.92^{\pm.083}$ & ${2.29^{\pm.07}}$  \\
+
+\end{tabular}
