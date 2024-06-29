@@ -338,7 +338,6 @@ python -m visualize.render_mesh --input_path /path/to/mp4/stick/figure/file
 
 ## Convert SMPL human mesh into image
 
-<details>
   <summary><b>Create Images from .obj Files</b></summary>
 
 ### Generate images from .obj files
@@ -376,8 +375,6 @@ python pymesh.py /path/to/obj/files /path/to/output/images
   ```shell
   pip install pymeshlab trimesh matplotlib tqdm imageio
   ```
-
-</details>
 
 
 
