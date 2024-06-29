@@ -336,7 +336,7 @@ python -m visualize.render_mesh --input_path /path/to/mp4/stick/figure/file
      Since the OBJs are not preserving vertices order, we also save this data to the `sample##_rep##_smpl_params.npy` file for your convenience.
 
 
-## Render SMPL Mesh
+## Convert SMPL human mesh into image
 
 <details>
   <summary><b>Create Images from .obj Files</b></summary>
@@ -360,6 +360,7 @@ python pymesh.py /path/to/obj/files /path/to/output/images
   ```python
   ax.view_init(elev=0, azim=90)
   ```
+  
 * To see the back side of the body, change the code to:
   ```python
   ax.view_init(elev=-90, azim=90)
