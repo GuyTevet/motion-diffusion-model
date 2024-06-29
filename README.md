@@ -359,17 +359,20 @@ python pymesh.py /path/to/obj/files /path/to/output/images
   ```python
   ax.view_init(elev=0, azim=90)
   ```
-  ![example](assets/human_mesh_back.png)
+  ![example](assets/human_mesh_right.png)
 
   
 * To see the back side of the body, change the code to:
   ```python
   ax.view_init(elev=-90, azim=90)
   ```
+  ![example](assets/human_mesh_back.png)
+  
 * To see the front side of the body, change the code to:
   ```python
   ax.view_init(elev=90, azim=270)
   ```
+  ![example](assets/human_mesh_front.png)
 
 **Important:**
 * The `matplotlib` backend is set to `Agg` to avoid conflicts with GUI-based backends.
