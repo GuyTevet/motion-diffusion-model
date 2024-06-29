@@ -335,6 +335,98 @@ python -m visualize.render_mesh --input_path /path/to/mp4/stick/figure/file
   1. A more straightforward way is using the mesh data itself. All meshes have the same topology (SMPL), so you just need to keyframe vertex locations. 
      Since the OBJs are not preserving vertices order, we also save this data to the `sample##_rep##_smpl_params.npy` file for your convenience.
 
+
+## Render SMPL Mesh
+
+<details>
+  <summary><b>Create Images from .obj Files</b></summary>
+
+### Generate images from .obj files
+
+```shell
+python pymesh.py /path/to/obj/files /path/to/output/images
+```
+
+**This script outputs:**
+* `frame##.png` - Rendered images of the mesh from `.obj` files.
+
+**Notes:**
+* Ensure the `.obj` files are located in the specified input directory.
+* The output directory will contain the rendered images for each frame.
+* The `.obj` files can be integrated into Blender/Maya/3DS-MAX and rendered using them.
+
+**Customizing Viewing Angles:**
+* To see the right side of the body, change the code to:
+  ```python
+  ax.view_init(elev=0, azim=90)
+  ```
+* To see the back side of the body, change the code to:
+  ```python
+  ax.view_init(elev=-90, azim=90)
+  ```
+* To see the front side of the body, change the code to:
+  ```python
+  ax.view_init(elev=90, azim=270)
+  ```
+
+**Important:**
+* The `matplotlib` backend is set to `Agg` to avoid conflicts with GUI-based backends.
+* Ensure you have the required dependencies installed:
+  ```shell
+  pip install pymeshlab trimesh matplotlib tqdm imageio
+  ```
+
+</details>
+
+---
+
+### Code for README.md
+
+```markdown
+## Render SMPL Mesh
+
+<details>
+  <summary><b>Create Images from .obj Files</b></summary>
+
+### Generate images from .obj files
+
+```shell
+python pymesh.py /path/to/obj/files /path/to/output/images
+```
+
+**This script outputs:**
+* `frame##.png` - Rendered images of the mesh from `.obj` files.
+
+**Notes:**
+* Ensure the `.obj` files are located in the specified input directory.
+* The output directory will contain the rendered images for each frame.
+* The `.obj` files can be integrated into Blender/Maya/3DS-MAX and rendered using them.
+
+**Customizing Viewing Angles:**
+* To see the right side of the body, change the code to:
+  ```python
+  ax.view_init(elev=0, azim=90)
+  ```
+* To see the back side of the body, change the code to:
+  ```python
+  ax.view_init(elev=-90, azim=90)
+  ```
+* To see the front side of the body, change the code to:
+  ```python
+  ax.view_init(elev=90, azim=270)
+  ```
+
+**Important:**
+* The `matplotlib` backend is set to `Agg` to avoid conflicts with GUI-based backends.
+* Ensure you have the required dependencies installed:
+  ```shell
+  pip install pymeshlab trimesh matplotlib tqdm imageio
+  ```
+
+</details>
+
+
+
 ## Motion Editing
 
 * This feature is available for text-to-motion datasets (HumanML3D and KIT).
