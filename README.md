@@ -26,7 +26,7 @@ Performance improvement is due to an evaluation bug fix. BLUE marks fixed entrie
 You can use [this](assets/fixed_results.tex) `.tex` file.
 
 ## Bibtex
-<span style="color:red">**NOTE:** MDM and MotionDiffuse are NOT the same paper. For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
+🔴🔴🔴**NOTE: MDM and MotionDiffuse are NOT the same paper!** For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
 
 <!-- If you find this code useful in your research, please cite: -->
 
