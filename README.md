@@ -24,7 +24,7 @@ Performance improvement is due to an evaluation bug fix. BLUE marks fixed entrie
 ![fixed_results](assets/fixed_results.png)
 
 - You can use [this](assets/fixed_results.tex) `.tex` file.
-- The fixed **KIT** results are availble [here](https://github.com/GuyTevet/motion-diffusion-model/issues/211#issue-2369160290).
+- The fixed **KIT** results are available [here](https://github.com/GuyTevet/motion-diffusion-model/issues/211#issue-2369160290).
 
 ## Bibtex
 🔴🔴🔴**NOTE: MDM and MotionDiffuse are NOT the same paper!** For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
