@@ -25,6 +25,22 @@ Performance improvement is due to an evaluation bug fix. BLUE marks fixed entrie
 
 You can use [this](assets/fixed_results.tex) `.tex` file.
 
+## Bibtex
+<span style="color:red">**NOTE:** MDM and MotionDiffuse are NOT the same paper. For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
+
+<!-- If you find this code useful in your research, please cite: -->
+
+```
+@inproceedings{
+tevet2023human,
+title={Human Motion Diffusion Model},
+author={Guy Tevet and Sigal Raab and Brian Gordon and Yoni Shafir and Daniel Cohen-or and Amit Haim Bermano},
+booktitle={The Eleventh International Conference on Learning Representations },
+year={2023},
+url={https://openreview.net/forum?id=SJ1kSyO2jwu}
+}
+```
+
 ## News
 
 📢 **15/Apr/24** - Released a [50 diffusion steps model](https://drive.google.com/file/d/1cfadR1eZ116TIdXK7qDX1RugAerEiJXr/view?usp=sharing) (instead of 1000 steps) which runs 20X faster 🤩🤩🤩 with comparable results.
@@ -50,20 +66,6 @@ You can use [this](assets/fixed_results.tex) `.tex` file.
 
 📢 **6/Oct/22** - First release - sampling and rendering using pre-trained models.
 
-
-#### Bibtex
-If you find this code useful in your research, please cite:
-
-```
-@inproceedings{
-tevet2023human,
-title={Human Motion Diffusion Model},
-author={Guy Tevet and Sigal Raab and Brian Gordon and Yoni Shafir and Daniel Cohen-or and Amit Haim Bermano},
-booktitle={The Eleventh International Conference on Learning Representations },
-year={2023},
-url={https://openreview.net/forum?id=SJ1kSyO2jwu}
-}
-```
 
 ## Checkout MDM Follow-ups (partial list)
 
