@@ -18,12 +18,13 @@ Please visit our [**webpage**](https://guytevet.github.io/mdm-page/) for more de
 
 (2) [Calling CLIP just once and caching the result](https://github.com/GuyTevet/motion-diffusion-model/commit/94c173ff8bb11362e45dd9262751f07bf9293660) runs 2X faster for all models. Please pull.
 
-## MDM results on HumanML3D to cite in your paper (The original model used in the paper)
+## MDM results on *HumanML3D* to cite in your paper (The original model used in the MDM paper)
 
 Performance improvement is due to an evaluation bug fix. BLUE marks fixed entries compared to the paper.
 ![fixed_results](assets/fixed_results.png)
 
-You can use [this](assets/fixed_results.tex) `.tex` file.
+- You can use [this](assets/fixed_results.tex) `.tex` file.
+- The fixed **KIT** results are availble [here](https://github.com/GuyTevet/motion-diffusion-model/issues/211#issue-2369160290).
 
 ## Bibtex
 🔴🔴🔴**NOTE: MDM and MotionDiffuse are NOT the same paper!** For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
