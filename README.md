@@ -76,7 +76,8 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 
 💃 [MAS](https://guytevet.github.io/mas-page/) - Generating intricate 3D motions (including non-humanoid) using 2D diffusion models trained on in-the-wild videos.
 
-
+🐒 [MoMo](https://monkeyseedocg.github.io/) - Monkey See, Monkey Do: Harnessing Self-attention in Motion Diffusion
+for Zero-shot Motion Transfer
 
 
 ## Getting started
