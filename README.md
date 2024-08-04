@@ -79,6 +79,8 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 🐒 [MoMo](https://monkeyseedocg.github.io/) - Monkey See, Monkey Do: Harnessing Self-attention in Motion Diffusion
 for Zero-shot Motion Transfer
 
+🏃 [CAMDM](https://github.com/AIGAnimation/CAMDM) - Taming Diffusion Probabilistic Models for Character Control - a real-time version of MDM.
+
 
 ## Getting started
 
