@@ -70,6 +70,8 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 
 ## Checkout MDM Follow-ups (partial list)
 
+🥋 [CLoSD](https://guytevet.github.io/CLoSD-page/) - Real-time MDM controls the character in a physical simulation.
+
 🐉 [SinMDM](https://sinmdm.github.io/SinMDM-page/) - Learns single motion motifs - even for non-humanoid characters.
 
 👯 [PriorMDM](https://priormdm.github.io/priorMDM-page/) - Uses MDM as a generative prior, enabling new generation tasks with few examples or even no data at all.
