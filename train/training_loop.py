@@ -5,7 +5,6 @@ import time
 from types import SimpleNamespace
 import numpy as np
 
-import blobfile as bf
 import torch
 from torch.optim import AdamW
 
@@ -18,6 +17,7 @@ from diffusion.resample import create_named_schedule_sampler
 from data_loaders.humanml.networks.evaluator_wrapper import EvaluatorMDMWrapper
 from eval import eval_humanml, eval_humanact12_uestc
 from data_loaders.get_data import get_dataset_loader
+from utils.misc import load_model_wo_clip
 
 
 # For ImageNet experiments, this was a good default value.
@@ -41,6 +41,7 @@ class TrainLoop:
         self.log_interval = args.log_interval
         self.save_interval = args.save_interval
         self.resume_checkpoint = args.resume_checkpoint
+        self.fine_tunning = args.fine_tunning
         self.use_fp16 = False  # deprecating this option
         self.fp16_scale_growth = 1e-3  # deprecating this option
         self.weight_decay = args.weight_decay
@@ -104,20 +105,26 @@ class TrainLoop:
         resume_checkpoint = find_resume_checkpoint() or self.resume_checkpoint
 
         if resume_checkpoint:
-            self.resume_step = parse_resume_step_from_filename(resume_checkpoint)
-            logger.log(f"loading model from checkpoint: {resume_checkpoint}...")
-            self.model.load_state_dict(
-                dist_util.load_state_dict(
-                    resume_checkpoint, map_location=dist_util.dev()
+            if not self.fine_tunning:
+                self.resume_step = parse_resume_step_from_filename(resume_checkpoint)
+                logger.log(f"loading model from checkpoint: {resume_checkpoint}...")
+                self.model.load_state_dict(
+                    dist_util.load_state_dict(
+                        resume_checkpoint, map_location=dist_util.dev()
+                    )
                 )
-            )
+            else:
+                logger.log(f"loading model (for fine tunning!) from checkpoint: {resume_checkpoint}...")
+                state_dict = torch.load(resume_checkpoint, map_location='cpu')
+                load_model_wo_clip(self.model, state_dict)
+                self.model.to(dist_util.dev())
 
     def _load_optimizer_state(self):
         main_checkpoint = find_resume_checkpoint() or self.resume_checkpoint
-        opt_checkpoint = bf.join(
-            bf.dirname(main_checkpoint), f"opt{self.resume_step:09}.pt"
+        opt_checkpoint = os.path.join(
+            os.path.dirname(main_checkpoint), f"opt{self.resume_step:09}.pt"
         )
-        if bf.exists(opt_checkpoint):
+        if os.path.exists(opt_checkpoint):
             logger.log(f"loading optimizer state from checkpoint: {opt_checkpoint}")
             state_dict = dist_util.load_state_dict(
                 opt_checkpoint, map_location=dist_util.dev()
@@ -127,7 +134,7 @@ class TrainLoop:
     def run_loop(self):
 
         for epoch in range(self.num_epochs):
-            print(f'Starting epoch {epoch}')
+            print(f'Starting epoch {epoch} / {self.num_epochs}')
             for motion, cond in tqdm(self.data):
                 if not (not self.lr_anneal_steps or self.step + self.resume_step < self.lr_anneal_steps):
                     break
@@ -274,15 +281,13 @@ class TrainLoop:
 
             logger.log(f"saving model...")
             filename = self.ckpt_file_name()
-            with bf.BlobFile(bf.join(self.save_dir, filename), "wb") as f:
+            with open(os.path.join(self.save_dir, filename), "wb") as f:
                 torch.save(state_dict, f)
 
         save_checkpoint(self.mp_trainer.master_params)
 
-        with bf.BlobFile(
-            bf.join(self.save_dir, f"opt{(self.step+self.resume_step):09d}.pt"),
-            "wb",
-        ) as f:
+        opt_cp_path = os.path.join(self.save_dir, f"opt{(self.step+self.resume_step):09d}.pt")
+        with open(opt_cp_path, "wb",) as f:
             torch.save(self.opt.state_dict(), f)
 
 
