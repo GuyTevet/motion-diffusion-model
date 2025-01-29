@@ -44,6 +44,8 @@ url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 
 ## News
 
+📢 **29/Jan/25** - Added WandB support with `--train_platform_type WandBPlatform`.
+
 📢 **15/Apr/24** - Released a [50 diffusion steps model](https://drive.google.com/file/d/1cfadR1eZ116TIdXK7qDX1RugAerEiJXr/view?usp=sharing) (instead of 1000 steps) which runs 20X faster 🤩🤩🤩 with comparable results.
 
 📢 **12/Apr/24** - MDM inference is now 2X faster 🤩🤩🤩 This was made possible by [calling CLIP just once and caching the result](https://github.com/GuyTevet/motion-diffusion-model/commit/94c173ff8bb11362e45dd9262751f07bf9293660), and is backward compatible with older models.
@@ -414,7 +416,7 @@ python -m train.train_mdm --save_dir save/my_name --dataset humanact12 --cond_ma
 * Use `--diffusion_steps 50` to train the faster model with less diffusion steps.
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
-* Add `--train_platform_type {ClearmlPlatform, TensorboardPlatform}` to track results with either [ClearML](https://clear.ml/) or [Tensorboard](https://www.tensorflow.org/tensorboard).
+* Add `--train_platform_type {WandBPlatform, TensorboardPlatform}` to track results with either [WandB](https://wandb.ai/site/) or [Tensorboard](https://www.tensorflow.org/tensorboard).
 * Add `--eval_during_training` to run a short (90 minutes) evaluation for each saved checkpoint. 
   This will slow down training but will give you better monitoring.
 

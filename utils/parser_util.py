@@ -110,7 +110,7 @@ def add_training_options(parser):
                        help="Path to save checkpoints and results.")
     group.add_argument("--overwrite", action='store_true',
                        help="If True, will enable to use an already existing save_dir.")
-    group.add_argument("--train_platform_type", default='NoPlatform', choices=['NoPlatform', 'ClearmlPlatform', 'TensorboardPlatform'], type=str,
+    group.add_argument("--train_platform_type", default='NoPlatform', choices=['NoPlatform', 'ClearmlPlatform', 'TensorboardPlatform', 'WandBPlatform'], type=str,
                        help="Choose platform to log results. NoPlatform means no logging.")
     group.add_argument("--lr", default=1e-4, type=float, help="Learning rate.")
     group.add_argument("--weight_decay", default=0.0, type=float, help="Optimizer weight decay.")
