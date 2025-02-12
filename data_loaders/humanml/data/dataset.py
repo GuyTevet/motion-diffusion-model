@@ -209,6 +209,8 @@ class Text2MotionDatasetV2(data.Dataset):
         self.opt = opt
         self.w_vectorizer = w_vectorizer
         self.max_length = 20
+        if self.opt.fixed_len > 0:
+            self.max_length = self.opt.fixed_len
         self.pointer = 0
         self.max_motion_length = opt.max_motion_length
         min_motion_len = 40 if self.opt.dataset_name =='t2m' else 24
@@ -222,57 +224,74 @@ class Text2MotionDatasetV2(data.Dataset):
 
         new_name_list = []
         length_list = []
-        for name in tqdm(id_list):
-            try:
-                motion = np.load(pjoin(opt.motion_dir, name + '.npy'))
-                if (len(motion)) < min_motion_len or (len(motion) >= 200):
-                    continue
-                text_data = []
-                flag = False
-                with cs.open(pjoin(opt.text_dir, name + '.txt')) as f:
-                    for line in f.readlines():
-                        text_dict = {}
-                        line_split = line.strip().split('#')
-                        caption = line_split[0]
-                        tokens = line_split[1].split(' ')
-                        f_tag = float(line_split[2])
-                        to_tag = float(line_split[3])
-                        f_tag = 0.0 if np.isnan(f_tag) else f_tag
-                        to_tag = 0.0 if np.isnan(to_tag) else to_tag
 
-                        text_dict['caption'] = caption
-                        text_dict['tokens'] = tokens
-                        if f_tag == 0.0 and to_tag == 0.0:
-                            flag = True
-                            text_data.append(text_dict)
-                        else:
-                            try:
-                                n_motion = motion[int(f_tag*20) : int(to_tag*20)]
-                                if (len(n_motion)) < min_motion_len or (len(n_motion) >= 200):
-                                    continue
-                                new_name = random.choice('ABCDEFGHIJKLMNOPQRSTUVW') + '_' + name
-                                while new_name in data_dict:
+        _split = os.path.basename(split_file).replace('.txt', '')
+        _name =''
+        # cache_path = os.path.join(opt.meta_dir, self.opt.dataset_name + '_' + _split + _name + '.npy')
+        cache_path = os.path.join(opt.cache_dir, 'dataset', self.opt.dataset_name + '_' + _split + _name + '.npy')
+        if opt.use_cache and os.path.exists(cache_path):
+            print(f'Loading motions from cache file [{cache_path}]...')
+            _cache = np.load(cache_path, allow_pickle=True)[None][0]
+            name_list, length_list, data_dict = _cache['name_list'], _cache['length_list'], _cache['data_dict']
+            # name_list = name_list[:15]; length_list = length_list[:15]
+            # data_dict = {key: data_dict[key] for key in name_list}
+        else:
+            for name in tqdm(id_list):
+                try:
+                    motion = np.load(pjoin(opt.motion_dir, name + '.npy'))
+                    if (len(motion)) < min_motion_len or (len(motion) >= 200):
+                        continue
+                    text_data = []
+                    flag = False
+                    with cs.open(pjoin(opt.text_dir, name + '.txt')) as f:
+                        for line in f.readlines():
+                            text_dict = {}
+                            line_split = line.strip().split('#')
+                            caption = line_split[0]
+                            tokens = line_split[1].split(' ')
+                            f_tag = float(line_split[2])
+                            to_tag = float(line_split[3])
+                            f_tag = 0.0 if np.isnan(f_tag) else f_tag
+                            to_tag = 0.0 if np.isnan(to_tag) else to_tag
+
+                            text_dict['caption'] = caption
+                            text_dict['tokens'] = tokens
+                            if f_tag == 0.0 and to_tag == 0.0:
+                                flag = True
+                                text_data.append(text_dict)
+                            else:
+                                try:
+                                    n_motion = motion[int(f_tag*20) : int(to_tag*20)]
+                                    if (len(n_motion)) < min_motion_len or (len(n_motion) >= 200):
+                                        continue
                                     new_name = random.choice('ABCDEFGHIJKLMNOPQRSTUVW') + '_' + name
-                                data_dict[new_name] = {'motion': n_motion,
-                                                       'length': len(n_motion),
-                                                       'text':[text_dict]}
-                                new_name_list.append(new_name)
-                                length_list.append(len(n_motion))
-                            except:
-                                print(line_split)
-                                print(line_split[2], line_split[3], f_tag, to_tag, name)
-                                # break
+                                    while new_name in data_dict:
+                                        new_name = random.choice('ABCDEFGHIJKLMNOPQRSTUVW') + '_' + name
+                                    data_dict[new_name] = {'motion': n_motion,
+                                                           'length': len(n_motion),
+                                                           'text':[text_dict]}
+                                    new_name_list.append(new_name)
+                                    length_list.append(len(n_motion))
+                                except:
+                                    print(line_split)
+                                    print(line_split[2], line_split[3], f_tag, to_tag, name)
+                                    # break
 
-                if flag:
-                    data_dict[name] = {'motion': motion,
-                                       'length': len(motion),
-                                       'text': text_data}
-                    new_name_list.append(name)
-                    length_list.append(len(motion))
-            except:
-                pass
+                    if flag:
+                        data_dict[name] = {'motion': motion,
+                                           'length': len(motion),
+                                           'text': text_data}
+                        new_name_list.append(name)
+                        length_list.append(len(motion))
+                except:
+                    pass
 
-        name_list, length_list = zip(*sorted(zip(new_name_list, length_list), key=lambda x: x[1]))
+            name_list, length_list = zip(*sorted(zip(new_name_list, length_list), key=lambda x: x[1]))
+            print(f'Saving motions to cache file [{cache_path}]...')
+            np.save(cache_path, {
+                'name_list': name_list,
+                'length_list': length_list,
+                'data_dict': data_dict})
 
         self.mean = mean
         self.std = std
@@ -295,7 +314,8 @@ class Text2MotionDatasetV2(data.Dataset):
 
     def __getitem__(self, item):
         idx = self.pointer + item
-        data = self.data_dict[self.name_list[idx]]
+        key = self.name_list[idx]
+        data = self.data_dict[key]
         motion, m_length, text_list = data['motion'], data['length'], data['text']
         # Randomly select a caption
         text_data = random.choice(text_list)
@@ -330,7 +350,16 @@ class Text2MotionDatasetV2(data.Dataset):
             m_length = (m_length // self.opt.unit_length - 1) * self.opt.unit_length
         elif coin2 == 'single':
             m_length = (m_length // self.opt.unit_length) * self.opt.unit_length
+        
+        original_length = None
+        if self.opt.fixed_len > 0:
+            # Crop fixed_len
+            original_length = m_length
+            m_length = self.opt.fixed_len
+        
         idx = random.randint(0, len(motion) - m_length)
+        if self.opt.disable_offset_aug:
+            idx = random.randint(0, self.opt.unit_length)
         motion = motion[idx:idx+m_length]
 
         "Z Normalization"
@@ -342,7 +371,10 @@ class Text2MotionDatasetV2(data.Dataset):
                                      ], axis=0)
         # print(word_embeddings.shape, motion.shape)
         # print(tokens)
-        return word_embeddings, pos_one_hots, caption, sent_len, motion, m_length, '_'.join(tokens)
+
+        length = (original_length, m_length) if self.opt.fixed_len > 0 else m_length
+
+        return word_embeddings, pos_one_hots, caption, sent_len, motion, length, '_'.join(tokens)
 
 
 '''For use of training baseline'''
@@ -721,23 +753,30 @@ class TextOnlyDataset(data.Dataset):
 class HumanML3D(data.Dataset):
     def __init__(self, mode, datapath='./dataset/humanml_opt.txt', split="train", **kwargs):
         self.mode = mode
-        
+
         self.dataset_name = 't2m'
         self.dataname = 't2m'
 
         # Configurations of T2M dataset and KIT dataset is almost the same
-        abs_base_path = f'.'
+        abs_base_path = kwargs.get('abs_path', '.')
         dataset_opt_path = pjoin(abs_base_path, datapath)
-        device = None  # torch.device('cuda:4') # This param is not in use in this context
+        device = kwargs.get('device', None)
         opt = get_opt(dataset_opt_path, device)
-        opt.meta_dir = pjoin(abs_base_path, opt.meta_dir)
+        # opt.meta_dir = pjoin(abs_base_path, opt.meta_dir)
+        opt.cache_dir = kwargs.get('cache_path', '.')
         opt.motion_dir = pjoin(abs_base_path, opt.motion_dir)
         opt.text_dir = pjoin(abs_base_path, opt.text_dir)
         opt.model_dir = pjoin(abs_base_path, opt.model_dir)
         opt.checkpoints_dir = pjoin(abs_base_path, opt.checkpoints_dir)
         opt.data_root = pjoin(abs_base_path, opt.data_root)
         opt.save_root = pjoin(abs_base_path, opt.save_root)
-        opt.meta_dir = './dataset'
+        opt.meta_dir = pjoin(abs_base_path, './dataset')
+        opt.use_cache = kwargs.get('use_cache', True)
+        opt.fixed_len = kwargs.get('fixed_len', 0)
+        if opt.fixed_len > 0:
+            opt.max_motion_length = opt.fixed_len
+        is_autoregressive = kwargs.get('autoregressive', False)
+        opt.disable_offset_aug = is_autoregressive and (opt.fixed_len > 0) and (mode == 'eval')  # for autoregressive evaluation, use the start of the motion and not something from the middle
         self.opt = opt
         print('Loading dataset %s ...' % opt.dataset_name)
 
@@ -760,9 +799,12 @@ class HumanML3D(data.Dataset):
         if mode == 'text_only':
             self.t2m_dataset = TextOnlyDataset(self.opt, self.mean, self.std, self.split_file)
         else:
-            self.w_vectorizer = WordVectorizer(pjoin(abs_base_path, 'glove'), 'our_vab')
+            self.w_vectorizer = WordVectorizer(pjoin(opt.cache_dir, 'glove'), 'our_vab')
             self.t2m_dataset = Text2MotionDatasetV2(self.opt, self.mean, self.std, self.split_file, self.w_vectorizer)
             self.num_actions = 1 # dummy placeholder
+
+        self.mean_gpu = torch.tensor(self.mean).to(device)[None, :, None, None]
+        self.std_gpu = torch.tensor(self.std).to(device)[None, :, None, None]
 
         assert len(self.t2m_dataset) > 1, 'You loaded an empty dataset, ' \
                                           'it is probably because your data dir has only texts and no motions.\n' \

@@ -130,3 +130,11 @@ dmypy.json
 
 save/
 wandb/
+t2m/
+body_models/
+glove/
+slurm**/
+*.out
+*.err
+*.slurm
+.vscode/

@@ -5,6 +5,8 @@ from torch.utils.data import Dataset, DataLoader
 from os.path import join as pjoin
 from tqdm import tqdm
 from utils import dist_util
+from utils.sampler_util import AutoRegressiveSampler
+
 
 def build_models(opt):
     if opt.text_enc_mod == 'bigru':
@@ -145,9 +147,11 @@ class CompV6GeneratedDataset(Dataset):
 
 class CompMDMGeneratedDataset(Dataset):
 
-    def __init__(self, model, diffusion, dataloader, mm_num_samples, mm_num_repeats, max_motion_length, num_samples_limit, scale=1.):
+    def __init__(self, args, model, diffusion, dataloader, mm_num_samples, mm_num_repeats, max_motion_length, num_samples_limit, scale=1.):
+        self.args = args
         self.dataloader = dataloader
         self.dataset = dataloader.dataset
+        self.model = model
         assert mm_num_samples < len(dataloader.dataset)
         use_ddim = False  # FIXME - hardcoded
         clip_denoised = False  # FIXME - hardcoded
@@ -155,6 +159,10 @@ class CompMDMGeneratedDataset(Dataset):
         sample_fn = (
             diffusion.p_sample_loop if not use_ddim else diffusion.ddim_sample_loop
         )
+        if self.args.autoregressive:
+            sample_cls = AutoRegressiveSampler(args, sample_fn)
+            sample_fn = sample_cls.sample
+
 
         real_num_batches = len(dataloader)
         if num_samples_limit is not None:
@@ -178,6 +186,9 @@ class CompMDMGeneratedDataset(Dataset):
 
                 if num_samples_limit is not None and len(generated_motion) >= num_samples_limit:
                     break
+
+                model_kwargs['y'] = {key: val.to(dist_util.dev()) if torch.is_tensor(val) else val for key, val in model_kwargs['y'].items()}
+                motion = motion.to(dist_util.dev())
 
                 tokens = [t.split('_') for t in model_kwargs['y']['tokens']]
 
@@ -205,6 +216,9 @@ class CompMDMGeneratedDataset(Dataset):
                         const_noise=False,
                         # when experimenting guidance_scale we want to nutrileze the effect of noise on generation
                     )
+
+                    if 'prefix' in model_kwargs['y'].keys():
+                        model_kwargs['y']['lengths'] = model_kwargs['y']['orig_lengths']
 
                     if t == 0:
                         sub_dicts = [{

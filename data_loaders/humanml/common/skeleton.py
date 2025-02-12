@@ -52,10 +52,13 @@ class Skeleton(object):
 
     # face_joint_idx should follow the order of right hip, left hip, right shoulder, left shoulder
     # joints (batch_size, joints_num, 3)
-    def inverse_kinematics_np(self, joints, face_joint_idx, smooth_forward=False):
+    def inverse_kinematics_np(self, joints, face_joint_idx, smooth_forward=False, fix_bug=False):
         assert len(face_joint_idx) == 4
         '''Get Forward Direction'''
-        l_hip, r_hip, sdr_r, sdr_l = face_joint_idx
+        if fix_bug:
+            r_hip, l_hip, sdr_r, sdr_l = face_joint_idx
+        else:
+            l_hip, r_hip, sdr_r, sdr_l = face_joint_idx
         across1 = joints[:, r_hip] - joints[:, l_hip]
         across2 = joints[:, sdr_r] - joints[:, sdr_l]
         across = across1 + across2
@@ -71,32 +74,32 @@ class Skeleton(object):
 
         '''Get Root Rotation'''
         target = np.array([[0,0,1]]).repeat(len(forward), axis=0)
-        root_quat = qbetween_np(forward, target)
+        root_quat = qbetween_np(forward, target)  # angle from root to Z+ (= how much to rotate root such that it faces Z+)
 
         '''Inverse Kinematics'''
         # quat_params (batch_size, joints_num, 4)
         # print(joints.shape[:-1])
         quat_params = np.zeros(joints.shape[:-1] + (4,))
         # print(quat_params.shape)
-        root_quat[0] = np.array([[1.0, 0.0, 0.0, 0.0]])
+        # root_quat[0] = np.array([[1.0, 0.0, 0.0, 0.0]])  # this is a bug: the rotation of next joint in chain is computed wrt the root joint, which is now 0, but the next joint was not moved so it is like a huge rotation
         quat_params[:, 0] = root_quat
         # quat_params[0, 0] = np.array([[1.0, 0.0, 0.0, 0.0]])
         for chain in self._kinematic_tree:
             R = root_quat
             for j in range(len(chain) - 1):
                 # (batch, 3)
-                u = self._raw_offset_np[chain[j+1]][np.newaxis,...].repeat(len(joints), axis=0)
+                u = self._raw_offset_np[chain[j+1]][np.newaxis,...].repeat(len(joints), axis=0)  # rest-pose bone direction for joint j in the chain
                 # print(u.shape)
                 # (batch, 3)
-                v = joints[:, chain[j+1]] - joints[:, chain[j]]
+                v = joints[:, chain[j+1]] - joints[:, chain[j]]  # data bone direction for joint j+1 in the chain
                 v = v / np.sqrt((v**2).sum(axis=-1))[:, np.newaxis]
                 # print(u.shape, v.shape)
-                rot_u_v = qbetween_np(u, v)
+                rot_u_v = qbetween_np(u, v)  # angle betweem rest-pose bone and data bone (bone is j to j+1)
 
-                R_loc = qmul_np(qinv_np(R), rot_u_v)
+                R_loc = qmul_np(qinv_np(R), rot_u_v)  # bring angle to be local coordinate system, i.e., relative to the parent bone
 
                 quat_params[:,chain[j + 1], :] = R_loc
-                R = qmul_np(R, R_loc)
+                R = qmul_np(R, R_loc)  
 
         return quat_params
 

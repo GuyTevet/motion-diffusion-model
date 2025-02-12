@@ -10,7 +10,7 @@ import numpy as np
 
 _EPS4 = np.finfo(float).eps * 4.0
 
-_FLOAT_EPS = np.finfo(np.float).eps
+_FLOAT_EPS = np.finfo(float).eps
 
 # PyTorch-backed implementations
 def qinv(q):
@@ -27,6 +27,7 @@ def qinv_np(q):
 
 def qnormalize(q):
     assert q.shape[-1] == 4, 'q must be a tensor of shape (*, 4)'
+    q[..., -1] += 1e-4  # Guy - for safty, avoid zero devision
     return q / torch.norm(q, dim=-1, keepdim=True)
 
 
@@ -42,7 +43,8 @@ def qmul(q, r):
     original_shape = q.shape
 
     # Compute outer product
-    terms = torch.bmm(r.view(-1, 4, 1), q.view(-1, 1, 4))
+    # terms = torch.bmm(r.view(-1, 4, 1), q.view(-1, 1, 4))
+    terms = torch.bmm(r.reshape(-1, 4, 1), q.reshape(-1, 1, 4))
 
     w = terms[:, 0, 0] - terms[:, 1, 1] - terms[:, 2, 2] - terms[:, 3, 3]
     x = terms[:, 0, 1] + terms[:, 1, 0] - terms[:, 2, 3] + terms[:, 3, 2]
@@ -67,7 +69,7 @@ def qrot(q, v):
     q = q.contiguous().view(-1, 4)
     v = v.contiguous().view(-1, 3)
 
-    qvec = q[:, 1:]
+    qvec = q[:, 1:].to(v.device)
     uv = torch.cross(qvec, v, dim=1)
     uuv = torch.cross(qvec, uv, dim=1)
     return (v + 2 * (q[:, :1] * uv + uuv)).view(original_shape)

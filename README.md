@@ -26,12 +26,25 @@ Performance improvement is due to an evaluation bug fix. BLUE marks fixed entrie
 - You can use [this](assets/fixed_results.tex) `.tex` file.
 - The fixed **KIT** results are available [here](https://github.com/GuyTevet/motion-diffusion-model/issues/211#issue-2369160290).
 
+
+## [NEW] DiP: Ultra-fast Text-to-motion
+
+### DiP is now part of the MDM code base!
+
+### [Here's how to use it](DiP.md)
+
+![DiP](https://github.com/GuyTevet/mdm-page/raw/main/static/figures/dip_vis_caption_small.gif)
+
+
+
 ## Bibtex
 🔴🔴🔴**NOTE: MDM and MotionDiffuse are NOT the same paper!** For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
 
 <!-- If you find this code useful in your research, please cite: -->
 
 ```
+MDM:
+
 @inproceedings{
 tevet2023human,
 title={Human Motion Diffusion Model},
@@ -40,9 +53,27 @@ booktitle={The Eleventh International Conference on Learning Representations },
 year={2023},
 url={https://openreview.net/forum?id=SJ1kSyO2jwu}
 }
+
+DiP and CLoSD:
+
+@article{tevet2024closd,
+  title={CLoSD: Closing the Loop between Simulation and Diffusion for multi-task character control},
+  author={Tevet, Guy and Raab, Sigal and Cohan, Setareh and Reda, Daniele and Luo, Zhengyi and Peng, Xue Bin and Bermano, Amit H and van de Panne, Michiel},
+  journal={arXiv preprint arXiv:2410.03441},
+  year={2024}
+}
 ```
 
 ## News
+
+📢 **12/Feb/25** - Added many things:
+  * [The DiP model](DiP.md)
+  * MDM with DistilBERT text encoder (Add `--text_encoder_type bert`)
+  * `--gen_during_training` feature.
+  * `--mask_frames` bug fix.
+  * `--use_ema` Weight averaging using Exponential Moving Average.
+  * Dataset caching for faster loading (by default).
+  * `eval_humanml` script can be logged with WanDB.
 
 📢 **29/Jan/25** - Added WandB support with `--train_platform_type WandBPlatform`.
 
@@ -388,9 +419,26 @@ The output will look like this (blue joints are from the input motion; orange we
   <summary><b>Text to Motion</b></summary>
 
 **HumanML3D**
+
+To reproduce the original paper model, run:
+
 ```shell
 python -m train.train_mdm --save_dir save/my_humanml_trans_enc_512 --dataset humanml
 ```
+
+To reproduce MDM-50 steps, Run:
+
+```shell
+python -m train.train_mdm --save_dir save/my_humanml_trans_enc_512_50steps --dataset humanml --diffusion_steps 50 --mask_frames --use_ema
+```
+
+To reproduce MDM+DistilBERT, Run:
+
+```shell
+python -m train.train_mdm --save_dir save/my_humanml_trans_dec_bert_512 --dataset humanml --diffusion_steps 50 --arch trans_dec --text_encoder_type bert --mask_frames --use_ema
+```
+
+python -m train.train_mdm --save_dir save/humanml_trans_dec_bert_512_3 --dataset humanml --train_platform_type WandBPlatform --overwrite --eval_during_training --gen_during_training --diffusion_steps 50 --use_ema --arch trans_dec --text_encoder_type bert --mask_frames
 
 **KIT**
 ```shell
@@ -413,19 +461,23 @@ python -m train.train_mdm --save_dir save/my_name --dataset humanact12 --cond_ma
 ```
 </details>
 
+
+* **Recommended:** Add `--eval_during_training` and `--gen_during_training` to evaluate and generate motions for each saved checkpoint. 
+  This will slow down training but will give you better monitoring.
+* **Recommended:** Add `--use_ema` for Exponential Moving Average, and `--mask_frames` to fix a masking bug. Both improve performance.
 * Use `--diffusion_steps 50` to train the faster model with less diffusion steps.
 * Use `--device` to define GPU id.
 * Use `--arch` to choose one of the architectures reported in the paper `{trans_enc, trans_dec, gru}` (`trans_enc` is default).
+* Use `--text_encoder_type` to choose the text encoder `{clip, bert}` (`clip` is default).
 * Add `--train_platform_type {WandBPlatform, TensorboardPlatform}` to track results with either [WandB](https://wandb.ai/site/) or [Tensorboard](https://www.tensorflow.org/tensorboard).
-* Add `--eval_during_training` to run a short (90 minutes) evaluation for each saved checkpoint. 
-  This will slow down training but will give you better monitoring.
+
 
 ## Evaluate
 
 <details>
   <summary><b>Text to Motion</b></summary>
 
-* Takes about 20 hours (on a single GPU)
+<!-- * Takes about 20 hours (on a single GPU) -->
 * The output of this script for the pre-trained models (as was reported in the paper) is provided in the checkpoints zip file.
 
 **HumanML3D**

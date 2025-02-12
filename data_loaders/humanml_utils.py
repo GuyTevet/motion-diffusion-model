@@ -27,6 +27,7 @@ HML_JOINT_NAMES = [
 
 NUM_HML_JOINTS = len(HML_JOINT_NAMES)  # 22 SMPLH body joints
 
+HML_EE_JOINT_NAMES = ['left_foot', 'right_foot', 'left_wrist', 'right_wrist', 'head']
 HML_LOWER_BODY_JOINTS = [HML_JOINT_NAMES.index(name) for name in ['pelvis', 'left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle', 'left_foot', 'right_foot',]]
 SMPL_UPPER_BODY_JOINTS = [i for i in range(len(HML_JOINT_NAMES)) if i not in HML_LOWER_BODY_JOINTS]
 
@@ -44,6 +45,11 @@ HML_ROOT_MASK = np.concatenate(([True]*(1+2+1),
                                 HML_ROOT_BINARY[1:].repeat(3),
                                 HML_ROOT_BINARY[1:].repeat(6),
                                 HML_ROOT_BINARY.repeat(3),
+                                [False] * 4))
+HML_ROOT_HORIZONTAL_MASK = np.concatenate(([True]*(1+2) + [False],
+                                np.zeros_like(HML_ROOT_BINARY[1:].repeat(3)),
+                                np.zeros_like(HML_ROOT_BINARY[1:].repeat(6)),
+                                np.zeros_like(HML_ROOT_BINARY.repeat(3)),
                                 [False] * 4))
 HML_LOWER_BODY_JOINTS_BINARY = np.array([i in HML_LOWER_BODY_JOINTS for i in range(NUM_HML_JOINTS)])
 HML_LOWER_BODY_MASK = np.concatenate(([True]*(1+2+1),

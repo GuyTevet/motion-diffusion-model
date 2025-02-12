@@ -11,7 +11,7 @@ from data_loaders.get_data import get_dataset_loader
 from data_loaders.humanml.scripts.motion_process import recover_from_ric
 from data_loaders.humanml.utils.plot_script import plot_3d_motion
 from data_loaders.tensors import collate
-from model.cfg_sampler import ClassifierFreeSampleModel
+from utils.sampler_util import ClassifierFreeSampleModel
 from utils import dist_util
 from utils.model_util import create_model_and_diffusion, load_model_wo_clip
 from visualize.motions2hik import motions2hik

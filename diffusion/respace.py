@@ -3,6 +3,7 @@ import numpy as np
 import torch as th
 
 from .gaussian_diffusion import GaussianDiffusion
+from utils.misc import wrapped_getattr
 
 
 def space_timesteps(num_timesteps, section_counts):
@@ -127,3 +128,7 @@ class _WrappedModel:
         if self.rescale_timesteps:
             new_ts = new_ts.float() * (1000.0 / self.original_num_steps)
         return self.model(x, new_ts, **kwargs)
+
+    def __getattr__(self, name, default=None):
+        # this method is reached only if name is not in self.__dict__.
+        return wrapped_getattr(self, name, default)

@@ -10,7 +10,7 @@ import torch
 from utils.parser_util import edit_args
 from utils.model_util import create_model_and_diffusion, load_model_wo_clip
 from utils import dist_util
-from model.cfg_sampler import ClassifierFreeSampleModel
+from utils.sampler_util import ClassifierFreeSampleModel
 from data_loaders.get_data import get_dataset_loader
 from data_loaders.humanml.scripts.motion_process import recover_from_ric
 from data_loaders import humanml_utils

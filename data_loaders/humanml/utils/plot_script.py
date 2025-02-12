@@ -8,7 +8,8 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import mpl_toolkits.mplot3d.axes3d as p3
 # import cv2
 from textwrap import wrap
-
+from moviepy.editor import VideoClip
+from moviepy.video.io.bindings import mplfig_to_npimage
 
 def list_cut_average(ll, intervals):
     if intervals == 1:
@@ -28,14 +29,19 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3
                    vis_mode='default', gt_frames=[]):
     matplotlib.use('Agg')
 
-    title = '\n'.join(wrap(title, 20))
+    title_per_frame = type(title) == list
+    if title_per_frame:
+        assert len(title) == len(joints), 'Title length should match the number of frames'
+        title = ['\n'.join(wrap(s, 20)) for s in title]
+    else:
+        title = '\n'.join(wrap(title, 20))
 
     def init():
         ax.set_xlim3d([-radius / 2, radius / 2])
         ax.set_ylim3d([0, radius])
         ax.set_zlim3d([-radius / 3., radius * 2 / 3.])
         # print(title)
-        fig.suptitle(title, fontsize=10)
+        # fig.suptitle(title, fontsize=10)  # Using dynamic title instead
         ax.grid(b=False)
 
     def plot_xzPlane(minx, maxx, miny, minz, maxz):
@@ -77,35 +83,37 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3
         colors[1] = colors_blue[1]
     elif vis_mode == 'gt':
         colors = colors_blue
-
-    frame_number = data.shape[0]
+    
+    n_frames = data.shape[0]
     #     print(dataset.shape)
 
     height_offset = MINS[1]
     data[:, :, 1] -= height_offset
-    trajec = data[:, 0, [0, 2]]
+    trajec = data[:, 0, [0, 2]]  # memorize original x,z pelvis values
 
-    data[..., 0] -= data[:, 0:1, 0]
+    # locate x,z pelvis values of ** each frame ** at zero
+    data[..., 0] -= data[:, 0:1, 0] 
     data[..., 2] -= data[:, 0:1, 2]
 
     #     print(trajec.shape)
 
     def update(index):
-        #         print(index)
-        ax.lines = []
-        ax.collections = []
+        # sometimes index is equal to n_frames/fps due to floating point issues. in such case, we duplicate the last frame
+        index = min(n_frames-1, int(index*fps))
+        ax.clear()
         ax.view_init(elev=120, azim=-90)
         ax.dist = 7.5
-        #         ax =
+        
+        # Dynamic title
+        if title_per_frame:
+            _title = title[index]
+        else:
+            _title = title
+        _title += f' [{index}]'
+        fig.suptitle(_title, fontsize=10)
+
         plot_xzPlane(MINS[0] - trajec[index, 0], MAXS[0] - trajec[index, 0], 0, MINS[2] - trajec[index, 1],
                      MAXS[2] - trajec[index, 1])
-        #         ax.scatter(dataset[index, :22, 0], dataset[index, :22, 1], dataset[index, :22, 2], color='black', s=3)
-
-        # if index > 1:
-        #     ax.plot3D(trajec[:index, 0] - trajec[index, 0], np.zeros_like(trajec[:index, 0]),
-        #               trajec[:index, 1] - trajec[index, 1], linewidth=1.0,
-        #               color='blue')
-        # #             ax = plot_xzPlane(ax, MINS[0], MAXS[0], 0, MINS[2], MAXS[2])
 
         used_colors = colors_blue if index in gt_frames else colors
         for i, (chain, color) in enumerate(zip(kinematic_tree, used_colors)):
@@ -118,15 +126,23 @@ def plot_3d_motion(save_path, kinematic_tree, joints, title, dataset, figsize=(3
         #         print(trajec[:index, 0].shape)
 
         plt.axis('off')
+        ax.set_axis_off()
         ax.set_xticklabels([])
         ax.set_yticklabels([])
         ax.set_zticklabels([])
 
-    ani = FuncAnimation(fig, update, frames=frame_number, interval=1000 / fps, repeat=False)
+        # Hide grid lines
+        ax.grid(False)
 
-    # writer = FFMpegFileWriter(fps=fps)
-    ani.save(save_path, fps=fps)
-    # ani = FuncAnimation(fig, update, frames=frame_number, interval=1000 / fps, repeat=False, init_func=init)
-    # ani.save(save_path, writer='pillow', fps=1000 / fps)
+        # Hide axes ticks
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
 
+
+        return mplfig_to_npimage(fig)
+
+    ani = VideoClip(update)
+    
     plt.close()
+    return ani

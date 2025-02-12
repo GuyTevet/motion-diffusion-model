@@ -7,12 +7,13 @@ from data_loaders.humanml.networks.evaluator_wrapper import EvaluatorMDMWrapper
 from collections import OrderedDict
 from data_loaders.humanml.scripts.motion_process import *
 from data_loaders.humanml.utils.utils import *
-from utils.model_util import create_model_and_diffusion, load_model_wo_clip
+from utils.model_util import create_model_and_diffusion, load_saved_model
 
 from diffusion import logger
 from utils import dist_util
 from data_loaders.get_data import get_dataset_loader
-from model.cfg_sampler import ClassifierFreeSampleModel
+from utils.sampler_util import ClassifierFreeSampleModel
+from train.train_platforms import ClearmlPlatform, TensorboardPlatform, NoPlatform, WandBPlatform  # required for the eval operation
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -135,7 +136,8 @@ def get_metric_statistics(values, replication_times):
     return mean, conf_interval
 
 
-def evaluation(eval_wrapper, gt_loader, eval_motion_loaders, log_file, replication_times, diversity_times, mm_num_times, run_mm=False):
+def evaluation(eval_wrapper, gt_loader, eval_motion_loaders, log_file, replication_times, 
+               diversity_times, mm_num_times, run_mm=False, eval_platform=None):
     with open(log_file, 'w') as f:
         all_metrics = OrderedDict({'Matching Score': OrderedDict({}),
                                    'R_precision': OrderedDict({}),
@@ -223,6 +225,17 @@ def evaluation(eval_wrapper, gt_loader, eval_motion_loaders, log_file, replicati
                         line += '(top %d) Mean: %.4f CInt: %.4f;' % (i+1, mean[i], conf_interval[i])
                     print(line)
                     print(line, file=f, flush=True)
+                    
+        # log results
+        if eval_platform is not None:
+            for k, v in mean_dict.items():
+                if k.startswith('R_precision'):
+                    for i in range(len(v)):
+                        eval_platform.report_scalar(name=f'top{i + 1}_' + k, value=v[i],
+                                                            iteration=1, group_name='Eval')
+                else:
+                    eval_platform.report_scalar(name=k, value=v, iteration=1, group_name='Eval')
+        
         return mean_dict
 
 
@@ -232,13 +245,18 @@ if __name__ == '__main__':
     args.batch_size = 32 # This must be 32! Don't change it! otherwise it will cause a bug in R precision calc!
     name = os.path.basename(os.path.dirname(args.model_path))
     niter = os.path.basename(args.model_path).replace('model', '').replace('.pt', '')
-    log_file = os.path.join(os.path.dirname(args.model_path), 'eval_humanml_{}_{}'.format(name, niter))
+    log_name = 'eval_humanml_{}_{}'.format(name, niter)
     if args.guidance_param != 1.:
-        log_file += f'_gscale{args.guidance_param}'
-    log_file += f'_{args.eval_mode}'
-    log_file += '.log'
+        log_name += f'_gscale{args.guidance_param}'
+    log_name += f'_{args.eval_mode}'
+    log_file = os.path.join(os.path.dirname(args.model_path), log_name + '.log')
+    save_dir = os.path.dirname(log_file)  # has not been tested with WandB
 
     print(f'Will save to log file [{log_file}]')
+
+    eval_platform_type = eval(args.train_platform_type)
+    eval_platform = eval_platform_type(save_dir, name=log_name)
+    eval_platform.report_args(args, name='Args')
 
     print(f'Eval mode [{args.eval_mode}]')
     if args.eval_mode == 'debug':
@@ -275,15 +293,19 @@ if __name__ == '__main__':
     logger.log("creating data loader...")
     split = 'test'
     gt_loader = get_dataset_loader(name=args.dataset, batch_size=args.batch_size, num_frames=None, split=split, hml_mode='gt')
-    gen_loader = get_dataset_loader(name=args.dataset, batch_size=args.batch_size, num_frames=None, split=split, hml_mode='eval')
+    # gen_loader = get_dataset_loader(name=args.dataset, batch_size=args.batch_size, num_frames=None, split=split, hml_mode='eval')
+    # added new features + support for prefix completion:
+    gen_loader = get_dataset_loader(name=args.dataset, batch_size=args.batch_size, num_frames=None, split=split, hml_mode='eval',
+                                    fixed_len=args.context_len+args.pred_len, pred_len=args.pred_len, device=dist_util.dev(),
+                                    autoregressive=args.autoregressive)
+
     num_actions = gen_loader.dataset.num_actions
 
     logger.log("Creating model and diffusion...")
     model, diffusion = create_model_and_diffusion(args, gen_loader)
 
     logger.log(f"Loading checkpoints from [{args.model_path}]...")
-    state_dict = torch.load(args.model_path, map_location='cpu')
-    load_model_wo_clip(model, state_dict)
+    load_saved_model(model, args.model_path, use_avg=args.use_ema)
 
     if args.guidance_param != 1:
         model = ClassifierFreeSampleModel(model)   # wrapping model with the classifier-free sampler
@@ -294,11 +316,15 @@ if __name__ == '__main__':
         ################
         ## HumanML3D Dataset##
         ################
-        'vald': lambda: get_mdm_loader(
-            model, diffusion, args.batch_size,
-            gen_loader, mm_num_samples, mm_num_repeats, gt_loader.dataset.opt.max_motion_length, num_samples_limit, args.guidance_param
+        'vald': lambda: get_mdm_loader(args,
+            model=model, diffusion=diffusion, batch_size=args.batch_size,
+            ground_truth_loader=gen_loader, mm_num_samples=mm_num_samples, mm_num_repeats=mm_num_repeats, 
+            max_motion_length=gt_loader.dataset.opt.max_motion_length, num_samples_limit=num_samples_limit, 
+            scale=args.guidance_param
         )
     }
 
     eval_wrapper = EvaluatorMDMWrapper(args.dataset, dist_util.dev())
-    evaluation(eval_wrapper, gt_loader, eval_motion_loaders, log_file, replication_times, diversity_times, mm_num_times, run_mm=run_mm)
+    evaluation(eval_wrapper, gt_loader, eval_motion_loaders, log_file, replication_times, 
+               diversity_times, mm_num_times, run_mm=run_mm, eval_platform=eval_platform)
+    eval_platform.close()

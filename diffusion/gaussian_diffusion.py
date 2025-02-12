@@ -16,6 +16,8 @@ from copy import deepcopy
 from diffusion.nn import mean_flat, sum_flat
 from diffusion.losses import normal_kl, discretized_gaussian_log_likelihood
 from data_loaders.humanml.scripts import motion_process
+from utils.loss_util import masked_l2, masked_goal_l2
+from data_loaders.humanml.scripts.motion_process import get_target_location
 
 def get_named_beta_schedule(schedule_name, num_diffusion_timesteps, scale_betas=1.):
     """
@@ -134,6 +136,8 @@ class GaussianDiffusion:
         lambda_root_vel=0.,
         lambda_vel_rcxyz=0.,
         lambda_fc=0.,
+        lambda_target_loc=0.,
+        **kargs,
     ):
         self.model_mean_type = model_mean_type
         self.model_var_type = model_var_type
@@ -148,13 +152,14 @@ class GaussianDiffusion:
         self.lambda_loc = lambda_loc
 
         self.lambda_rcxyz = lambda_rcxyz
+        self.lambda_target_loc = lambda_target_loc
         self.lambda_vel = lambda_vel
         self.lambda_root_vel = lambda_root_vel
         self.lambda_vel_rcxyz = lambda_vel_rcxyz
         self.lambda_fc = lambda_fc
 
         if self.lambda_rcxyz > 0. or self.lambda_vel > 0. or self.lambda_root_vel > 0. or \
-                self.lambda_vel_rcxyz > 0. or self.lambda_fc > 0.:
+                self.lambda_vel_rcxyz > 0. or self.lambda_fc > 0. or self.lambda_target_loc > 0.:
             assert self.loss_type == LossType.MSE, 'Geometric losses are supported by MSE loss type only!'
 
         # Use float64 for accuracy.
@@ -196,21 +201,9 @@ class GaussianDiffusion:
             / (1.0 - self.alphas_cumprod)
         )
 
-        self.l2_loss = lambda a, b: (a - b) ** 2  # th.nn.MSELoss(reduction='none')  # must be None for handling mask later on.
+        # self.l2_loss = lambda a, b: (a - b) ** 2  # th.nn.MSELoss(reduction='none')  # must be None for handling mask later on.
+        self.masked_l2 = masked_l2
 
-    def masked_l2(self, a, b, mask):
-        # assuming a.shape == b.shape == bs, J, Jdim, seqlen
-        # assuming mask.shape == bs, 1, 1, seqlen
-        loss = self.l2_loss(a, b)
-        loss = sum_flat(loss * mask.float())  # gives \sigma_euclidean over unmasked elements
-        n_entries = a.shape[1] * a.shape[2]
-        non_zero_elements = sum_flat(mask) * n_entries
-        # print('mask', mask.shape)
-        # print('non_zero_elements', non_zero_elements)
-        # print('loss', loss)
-        mse_loss_val = loss / non_zero_elements
-        # print('mse_loss_val', mse_loss_val)
-        return mse_loss_val
 
 
     def q_mean_variance(self, x_start, t):
@@ -1344,10 +1337,20 @@ class GaussianDiffusion:
                 terms["vel_mse"] = self.masked_l2(target_vel[:, :-1, :, :], # Remove last joint, is the root location!
                                                   model_output_vel[:, :-1, :, :],
                                                   mask[:, :, :, 1:])  # mean_flat((target_vel - model_output_vel) ** 2)
+            
+            if self.lambda_target_loc > 0.:
+                assert self.model_mean_type == ModelMeanType.START_X, 'This feature supports only X_start pred for now!'
+                ref_target = model_kwargs['y']['target_cond']
+                pred_target = get_target_location(model_output, dataset.mean_gpu, dataset.std_gpu, 
+                                            model_kwargs['y']['lengths'], dataset.t2m_dataset.opt.joints_num, model.all_goal_joint_names, 
+                                            model_kwargs['y']['target_joint_names'], model_kwargs['y']['is_heading'])
+                terms["target_loc"] = masked_goal_l2(pred_target, ref_target, model_kwargs['y'], model.all_goal_joint_names)
+                            
 
             terms["loss"] = terms["rot_mse"] + terms.get('vb', 0.) +\
                             (self.lambda_vel * terms.get('vel_mse', 0.)) +\
                             (self.lambda_rcxyz * terms.get('rcxyz_mse', 0.)) + \
+                            (self.lambda_target_loc * terms.get('target_loc', 0.)) + \
                             (self.lambda_fc * terms.get('fc', 0.))
 
         else:
