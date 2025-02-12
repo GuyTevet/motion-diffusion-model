@@ -113,8 +113,7 @@ Follow the setup instructions of [MDM](README.md), then download the checkpoints
 
 ## Demo
 
-
-That would be awesome (if we had one😬). In case you want to create it and get eternal glory, the original [MDM Demo](https://replicate.com/daanelson/motion_diffusion_model) might be a good starting point.
+It would be amazing to have one (we don’t yet 😬). Create one, and eternal glory shall be yours!
 
 
 ## Generate
