@@ -98,10 +98,12 @@ Follow the setup instructions of [MDM](README.md), then download the checkpoints
 ### Model Checkpoints
 
 
-[DiP]() (For text-to-motion)
+[DiP](https://huggingface.co/guytevet/CLoSD/tree/main/checkpoints/dip/DiP_no-target_10steps_context20_predict40) For text-to-motion. 
+- Identical to the one in CLoSD.
 
 
-[DiP with target conditioning]() (For the CLoSD applications)
+[DiP with target conditioning](https://drive.google.com/file/d/1PsilP2xhcOHHXkmtxtOwNbWeI0njU2ic/view?usp=sharing) For the CLoSD applications. 
+- Slightly different from the one in CLoSD, as it supports both with and without target conditioning.
 
 
 - **Note:** DiP code is also included in the [CLoSD code base](https://github.com/GuyTevet/CLoSD). If you would like to run the full CLoSD system you better use it instead.
