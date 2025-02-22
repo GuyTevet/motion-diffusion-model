@@ -38,9 +38,8 @@ Performance improvement is due to an evaluation bug fix. BLUE marks fixed entrie
 
 
 ## Bibtex
-🔴🔴🔴**NOTE: MDM and MotionDiffuse are NOT the same paper!** For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
 
-<!-- If you find this code useful in your research, please cite: -->
+If you find this code useful in your research, please cite:
 
 ```
 MDM:
