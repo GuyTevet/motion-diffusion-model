@@ -102,6 +102,8 @@ DiP and CLoSD:
 
 ## Checkout MDM Follow-ups (partial list)
 
+🦩 [AnyTop](https://anytop2025.github.io/Anytop-page/) - Character Animation Diffusion with Any Topology.
+
 🥋 [CLoSD](https://guytevet.github.io/CLoSD-page/) - Real-time MDM controls the character in a physical simulation.
 
 🐉 [SinMDM](https://sinmdm.github.io/SinMDM-page/) - Learns single motion motifs - even for non-humanoid characters.
