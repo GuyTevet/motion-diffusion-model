@@ -166,7 +166,7 @@ class CompMDMGeneratedDataset(Dataset):
 
         real_num_batches = len(dataloader)
         if num_samples_limit is not None:
-            real_num_batches = num_samples_limit // dataloader.batch_size + 1
+            real_num_batches = min(num_samples_limit // dataloader.batch_size + 1, real_num_batches)
         print('real_num_batches', real_num_batches)
 
         generated_motion = []
@@ -229,15 +229,20 @@ class CompMDMGeneratedDataset(Dataset):
                             # Fixed cap_len calculation, changed from len(tokens[bs_i])
                             # Lead to improved R-precision and Multimodal Dist.
                             # issue: https://github.com/GuyTevet/motion-diffusion-model/issues/182
-                            'cap_len': tokens[bs_i].index('eos/OTHER') + 1, 
+                            'cap_len': tokens[bs_i].index('eos/OTHER') + 1,
                             } for bs_i in range(dataloader.batch_size)]
                         generated_motion += sub_dicts
 
                     if is_mm:
-                        mm_motions += [{'motion': sample[bs_i].squeeze().permute(1, 0).cpu().numpy(),
-                                        'length': model_kwargs['y']['lengths'][bs_i].cpu().numpy(),
-                                        } for bs_i in range(dataloader.batch_size)]
+                        for bs_i in range(dataloader.batch_size):
+                            mm_motion = sample[bs_i].squeeze().permute(1, 0).cpu().numpy()
+                            if self.dataset.mode == 'eval':
+                                mm_motion = self.dataset.t2m_dataset.inv_transform(mm_motion)
+                                mm_motion = (mm_motion - self.dataset.mean_for_eval) / self.dataset.std_for_eval  # according to T2M norms
 
+                            mm_motions.append({'motion': mm_motion,
+                                               'length': model_kwargs['y']['lengths'][bs_i].cpu().numpy(),
+                                               })
                 if is_mm:
                     mm_generated_motions += [{
                                     'caption': model_kwargs['y']['text'][bs_i],
