@@ -38,9 +38,8 @@ Performance improvement is due to an evaluation bug fix. BLUE marks fixed entrie
 
 
 ## Bibtex
-🔴🔴🔴**NOTE: MDM and MotionDiffuse are NOT the same paper!** For some reason, Google Scholar merged the two papers. The right way to cite MDM is:</span>
 
-<!-- If you find this code useful in your research, please cite: -->
+If you find this code useful in your research, please cite:
 
 ```
 MDM:
@@ -102,6 +101,8 @@ DiP and CLoSD:
 
 
 ## Checkout MDM Follow-ups (partial list)
+
+🦩 [AnyTop](https://anytop2025.github.io/Anytop-page/) - Character Animation Diffusion with Any Topology.
 
 🥋 [CLoSD](https://guytevet.github.io/CLoSD-page/) - Real-time MDM controls the character in a physical simulation.
 
@@ -446,7 +447,6 @@ To reproduce MDM+DistilBERT, Run:
 python -m train.train_mdm --save_dir save/my_humanml_trans_dec_bert_512 --dataset humanml --diffusion_steps 50 --arch trans_dec --text_encoder_type bert --mask_frames --use_ema
 ```
 
-python -m train.train_mdm --save_dir save/humanml_trans_dec_bert_512_3 --dataset humanml --train_platform_type WandBPlatform --overwrite --eval_during_training --gen_during_training --diffusion_steps 50 --use_ema --arch trans_dec --text_encoder_type bert --mask_frames
 
 **KIT**
 ```shell
