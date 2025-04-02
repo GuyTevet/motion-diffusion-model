@@ -102,6 +102,8 @@ DiP and CLoSD:
 
 ## Checkout MDM Follow-ups (partial list)
 
+🦩 [LoRA-MDM](https://haimsaw.github.io/LoRA-MDM/) - Promptly adapt MDM for stylized text-to-motion.
+
 🦩 [AnyTop](https://anytop2025.github.io/Anytop-page/) - Character Animation Diffusion with Any Topology.
 
 🥋 [CLoSD](https://guytevet.github.io/CLoSD-page/) - Real-time MDM controls the character in a physical simulation.
