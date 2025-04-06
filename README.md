@@ -148,14 +148,8 @@ pip install git+https://github.com/openai/CLIP.git
 
 Download dependencies:
 
-**Text to Motion** 
-
-[Download HumanML3D](https://drive.google.com/drive/folders/1OZrTlAGRvLjXhXwnRiOC-oxYry1vf-Uu?usp=drive_link)
-
-Or, alternatively, parse the data yourself according to the original instructions:
-
 <details>
-  <summary><b>Original Text to Motion Instructions</b></summary>
+  <summary><b>Text to Motion</b></summary>
 
 ```bash
 bash prepare/download_smpl_files.sh
@@ -185,8 +179,15 @@ bash prepare/download_recognition_unconstrained_models.sh
 
 ### 2. Get data
 
+**Text to Motion** 
+
+[Download HumanML3D](https://drive.google.com/drive/folders/1OZrTlAGRvLjXhXwnRiOC-oxYry1vf-Uu?usp=drive_link)
+
+Or, alternatively, parse the data yourself according to the original instructions:
+
+
 <details>
-  <summary><b>Text to Motion</b></summary>
+  <summary><b>Original Text to Motion instructions</b></summary>
 
 There are two paths to get the data:
 
