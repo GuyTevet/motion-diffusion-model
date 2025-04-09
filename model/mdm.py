@@ -151,7 +151,7 @@ class MDM(nn.Module):
         return clip_model
 
     def mask_cond(self, cond, force_mask=False):
-        seq_len, bs, d = cond.shape
+        bs = cond.shape[-2]
         if force_mask:
             return torch.zeros_like(cond)
         elif self.training and self.cond_mask_prob > 0.:
@@ -223,7 +223,7 @@ class MDM(nn.Module):
                 text_mask = torch.cat([torch.zeros_like(text_mask[:, 0:1]), text_mask], dim=1)
         if 'action' in self.cond_mode:
             action_emb = self.embed_action(y['action'])
-            emb += self.mask_cond(action_emb, force_mask=force_mask)
+            emb = time_emb + self.mask_cond(action_emb, force_mask=force_mask)
 
         if self.arch == 'gru':
             x_reshaped = x.reshape(bs, njoints*nfeats, 1, nframes)
