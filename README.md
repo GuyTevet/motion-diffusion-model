@@ -68,6 +68,7 @@ DiP and CLoSD:
 📢 **12/Feb/25** - Added many things:
   * [The DiP model](DiP.md)
   * MDM with DistilBERT text encoder (Add `--text_encoder_type bert`)
+    * Developed by the legendary [Roy Kapon](https://scholar.google.com/citations?user=FAQOuSgAAAAJ&hl=en)!
   * `--gen_during_training` feature.
   * `--mask_frames` bug fix.
   * `--use_ema` Weight averaging using Exponential Moving Average.
